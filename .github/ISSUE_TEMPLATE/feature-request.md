@@ -7,31 +7,30 @@ assignees: ''
 
 ---
 
-name: "✨ Feature"
-description: "새로운 기능 추가"
+## 목적
 
-body:
-  - type: textarea
-    id: description
-    attributes:
-      label: "📄 설명"
-      description: "새로운 기능에 대한 설명을 작성해 주세요."
-      placeholder: "자세히 적을수록 좋습니다!"
-    validations:
-      required: true
+<!--
+이 기능을 왜 구현하는지 간단히 설명해주세요.
 
-  - type: textarea
-    id: tasks
-    attributes:
-      label: "✅ 작업할 내용"
-      description: "할 일을 체크박스 형태로 작성해주세요."
-      placeholder: "- [ ] 세부 작업을 이렇게 적어주세요!"
-    validations:
-      required: true
+예: 신규 사용자가 서비스에 가입할 수 있도록 함
+-->
 
-  - type: textarea
-    id: references
-    attributes:
-      label: "🙋🏻 참고 자료"
-      description: "참고 자료가 있다면 작성해 주세요."
-      placeholder: "예: 관련 문서나 링크를 남겨주세요."
+## 해당 기능을 구현하기 위한 할 일
+
+<!--
+- [] Job1
+- [] Job2
+- -->
+
+## 예상 시간
+
+<!--
+예: 3h
+-->
+
+## 🙋🏻 참고 자료  
+
+<!--
+참고 자료가 있다면 작성해 주세요.  
+> 예: 관련 문서나 링크를 남겨주세요.
+-->
