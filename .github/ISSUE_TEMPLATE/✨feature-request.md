@@ -1,5 +1,5 @@
 ---
-name: Feature Request
+name: "✨Feature Request"
 about: 새로운 기능 추가를 위한 이슈 템플릿입니다!
 title: "[FEAT]"
 labels: ''
