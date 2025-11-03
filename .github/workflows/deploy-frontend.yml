@@ -1,0 +1,49 @@
+# .github/workflows/deploy-frontend.yml
+
+name: Deploy Frontend (Monorepo)
+
+on:
+  push:
+    branches: [main]
+    # [핵심] 'frontend/' 폴더 하위에 변경이 있을 때만 실행
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-frontend.yml" # 워크플로우 자체 변경 시에도 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.NCP_SSH_KEY }}
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.NCP_SERVER_IP }}
+          username: ${{ secrets.NCP_SERVER_USER }}
+          key: ${{ secrets.NCP_SSH_KEY }}
+          port: 22
+
+          # [핵심] 서버에서 실행할 스크립트
+          script: |
+            echo "--- 1. Connecting to Server ---"
+            cd /var/www/web01-web-os-emulation  # (모노레포 루트로 이동)
+
+            echo "--- 2. Pulling latest code ---"
+            git pull origin main
+
+            echo "--- 3. Deploying Frontend ---"
+            cd frontend  # (프론트엔드 폴더로 이동)
+
+            echo "--- 4. Installing dependencies ---"
+            npm ci
+
+            echo "--- 5. Building React (Vite) ---"
+            npm run build
+
+            echo "--- Frontend Deployment Complete ---"
+            # Nginx는 이미 이 폴더의 dist를 바라보고 있으므로 재시작 불필요
