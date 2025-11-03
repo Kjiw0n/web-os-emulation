@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "lint:frontend": "eslint \"frontend/src/**/*.{ts,tsx}\"",
+    "lint:backend": "eslint \"backend/src/**/*.ts\"",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:fix": "npm run lint:frontend -- --fix && npm run lint:backend -- --fix",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "eslint-plugin-no-relative-import-paths": "^1.6.1"
+  }
+}

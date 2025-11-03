@@ -1,11 +1,11 @@
-require('@rushstack/eslint-config/patch/modern-module-resolution');
+require('@rushstack/eslint-patch/modern-module-resolution');
 const path = require('path');
 
 module.exports = {
   extends: ['@rushstack/eslint-config/profile/node-trusted-tool'],
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: true,
+    project: [path.resolve(__dirname, 'tsconfig.eslint.json')],
   },
   rules: {
     '@typescript-eslint/explicit-member-accessibility': 'off',

@@ -1,4 +1,4 @@
-require("@rushstack/eslint-config/patch/modern-module-resolution");
+require("@rushstack/eslint-patch/modern-module-resolution");
 const path = require("path");
 
 module.exports = {
@@ -8,17 +8,18 @@ module.exports = {
   ],
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: true,
+    project: [path.resolve(__dirname, "tsconfig.eslint.json")],
   },
   settings: {
     react: { version: "19.1" },
   },
+  plugins: ["no-relative-import-paths"],
   rules: {
     "@typescript-eslint/explicit-function-return-type": "off",
     "react/jsx-no-bind": "off",
     "no-relative-import-paths/no-relative-import-paths": [
       "warn",
-      { allowSameFolder: true, rootDir: "src", prefix: "@" },
+      { allowSameFolder: true, rootDir: "frontend/src", prefix: "@" },
     ],
   },
 };
