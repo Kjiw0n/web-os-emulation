@@ -1,1 +1,71 @@
-export class FileSystem {}
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { FileType } from '../types';
+
+@Entity('file_system')
+@Index('idx_fs_parent', ['parentId'])
+@Index('idx_fs_type_parent', ['type', 'parentId'])
+export class FileSystem {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ name: 'parent_id', nullable: true })
+  parentId: number | null;
+
+  @ManyToOne(() => FileSystem, { nullable: true })
+  @JoinColumn({ name: 'parent_id' })
+  parent: FileSystem | null;
+
+  @Column({ type: 'varchar', length: 255 })
+  name: string;
+
+  @Column({ type: 'enum', enum: FileType })
+  type: FileType;
+
+  @Column({ type: 'varchar', length: 1000, unique: true })
+  path: string;
+
+  @Column({
+    name: 'physical_path',
+    type: 'varchar',
+    length: 1000,
+    nullable: true,
+  })
+  physicalPath: string | null;
+
+  /**
+   * number인 경우 2GB 이상 파일은 오버플로우 가능해서 string으로 처리
+   * bigint인 경우 JSON 직렬화 제한
+   */
+  @Column({ type: 'bigint', default: 0 })
+  size: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  mimeType: string | null;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  fileExtension: string | null;
+
+  @Column({ type: 'varchar', length: 10, default: 'rwxr-xr-x' })
+  permissions: string;
+
+  @Column({ type: 'boolean', default: false })
+  is_hidden: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  accessedAt: Date | null;
+}
