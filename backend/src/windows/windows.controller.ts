@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { WindowsService } from './windows.service';
 import { CreateWindowDto } from './dto/create-window.dto';
 import { UpdateWindowDto } from './dto/update-window.dto';
