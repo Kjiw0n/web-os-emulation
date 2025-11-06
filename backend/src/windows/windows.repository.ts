@@ -4,13 +4,16 @@ import { Window } from './entities/window.entity';
 
 @Injectable()
 export class WindowsRepository {
-  constructor(
-    private readonly ds: DataSource,
-    private repo: Repository<Window> = this.ds.getRepository(Window),
-  ) {}
+  private repo: Repository<Window>;
+
+  constructor(private readonly dataSource: DataSource) {
+    this.repo = this.dataSource.getRepository(Window);
+  }
 
   withManager(manager: EntityManager): WindowsRepository {
-    return new WindowsRepository(this.ds, manager.getRepository(Window));
+    const newRepo = new WindowsRepository(this.dataSource);
+    newRepo.repo = manager.getRepository(Window);
+    return newRepo;
   }
 
   // FIXME: 최상단(z_index DESC) 윈도우를 FOR UPDATE로 가져오기. 다른 방법 있을까?
@@ -23,11 +26,15 @@ export class WindowsRepository {
       .getOne();
   }
 
-  create(data: Partial<Window>): Window {
-    return this.repo.create(data);
+  async save(window: Window): Promise<Window> {
+    return this.repo.save(window);
   }
 
-  save(entity: Window): Promise<Window> {
-    return this.repo.save(entity);
+  async findOne(id: number): Promise<Window | null> {
+    return this.repo.findOne({ where: { id } });
+  }
+
+  async find(): Promise<Window[]> {
+    return this.repo.find();
   }
 }
