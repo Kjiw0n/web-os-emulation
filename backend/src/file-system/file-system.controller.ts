@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { FileSystemService } from './file-system.service';
 import { CreateFileSystemDto } from './dto/create-file-system.dto';
 import { UpdateFileSystemDto } from './dto/update-file-system.dto';
@@ -23,7 +31,10 @@ export class FileSystemController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileSystemDto: UpdateFileSystemDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateFileSystemDto: UpdateFileSystemDto,
+  ) {
     return this.fileSystemService.update(+id, updateFileSystemDto);
   }
 
