@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { SyscallDto } from './dto/syscall.dto';
 import { CommandResult, ICommandHandler } from './handlers/command.interface';
+import { DateHandler } from './handlers/builtins/date.handler';
 
 @Injectable()
 export class SyscallService {
   private readonly handlers = new Map<string, ICommandHandler>();
 
+  constructor(
+    private readonly dateHandler: DateHandler,
+  ){
+    // 핸들러 등록
+    this.handlers.set('date', this.dateHandler);
+  }
+  
   // TODO: DI를 통해서 각 핸들러를 주입받아야 함
   // TODO: 모듈이 초기화될 때 핸들러를 handlers Map에 등록해야 함
 
@@ -39,16 +47,12 @@ export class SyscallService {
       // 핸들러에 작업 위임 (args, data 전달)
       return await handler.execute(args, data);
     } catch (err) {
-      if (err instanceof Error) {
-        return {
-          stdout: '',
-          stderr: err.message || 'An unexpected error occurred',
-        };
-      }
-      return {
-        stdout: '',
-        stderr: String(err) || 'An unexpected non-Error was thrown',
-      };
+    return {
+      stdout: '',
+      stderr: err instanceof Error
+        ? err.message
+        : 'Unknown error occurred',
+    };
     }
   }
 }
