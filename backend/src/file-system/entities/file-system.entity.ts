@@ -17,7 +17,7 @@ export class FileSystem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'parent_id', nullable: true })
+  @Column({ name: 'parent_id', type: 'int', nullable: true })
   parentId: number | null;
 
   @ManyToOne(() => FileSystem, { nullable: true })

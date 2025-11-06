@@ -47,7 +47,7 @@ export class Window {
   @Column({ name: 'is_maximized', type: 'boolean', default: false })
   isMaximized: boolean;
 
-  @Column({ name: 'process_id', nullable: true })
+  @Column({ name: 'process_id', type: 'int', nullable: true })
   processId: number | null;
 
   @Column({
@@ -59,7 +59,7 @@ export class Window {
   windowType: WindowType;
 
   // FIXME: 외래키 제약 조건을 사용 할 것인지 논의 필요.
-  @Column({ name: 'session_id', nullable: true })
+  @Column({ name: 'session_id', type: 'int', nullable: true })
   sessionId: number | null;
 
   @ManyToOne(() => Session, { nullable: true })
