@@ -2,8 +2,8 @@ import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
 import { Session } from 'src/sessions/entities';
+import { Window } from 'src/windows/entities';
 import { FileSystem } from 'src/file-system/entities';
-import { Window } from 'src/windows/entities/window.entity';
 
 config();
 
