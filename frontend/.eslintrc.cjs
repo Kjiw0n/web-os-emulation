@@ -9,6 +9,8 @@ module.exports = {
   parserOptions: {
     tsconfigRootDir: __dirname,
     project: [path.resolve(__dirname, "tsconfig.eslint.json")],
+    ecmaVersion: "latest",
+    sourceType: "module",
   },
   settings: {
     react: { version: "19.1" },
