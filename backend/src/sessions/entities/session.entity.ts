@@ -1,4 +1,5 @@
 import { FileSystem } from 'src/file-system/entities';
+import { randomBytes } from 'crypto';
 import {
   Column,
   CreateDateColumn,
@@ -40,4 +41,12 @@ export class Session {
     default: () => 'CURRENT_TIMESTAMP',
   })
   lastActivityAt: Date;
+
+  static create(directoryId: number): Session {
+    const session = new Session();
+    session.currentDirectoryId = directoryId;
+    session.sessionToken = randomBytes(16).toString('hex');
+    session.isActive = true;
+    return session;
+  }
 }
