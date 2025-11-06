@@ -48,22 +48,27 @@ export class FileSystem {
   @Column({ type: 'bigint', default: 0 })
   size: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ name: 'mime_type', type: 'varchar', length: 100, nullable: true })
   mimeType: string | null;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Column({
+    name: 'file_extension',
+    type: 'varchar',
+    length: 20,
+    nullable: true,
+  })
   fileExtension: string | null;
 
   @Column({ type: 'varchar', length: 10, default: 'rwxr-xr-x' })
   permissions: string;
 
-  @Column({ type: 'boolean', default: false })
-  is_hidden: boolean;
+  @Column({ name: 'is_hidden', type: 'boolean', default: false })
+  isHidden: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })
