@@ -4,13 +4,15 @@ import { Session } from './entities/session.entity';
 
 @Injectable()
 export class SessionsRepository {
-  constructor(
-    private readonly ds: DataSource,
-    private repo: Repository<Session> = this.ds.getRepository(Session),
-  ) {}
+  private repo: Repository<Session>;
+  constructor(private readonly ds: DataSource) {
+    this.repo = this.ds.getRepository(Session);
+  }
 
   withManager(manager: EntityManager): SessionsRepository {
-    return new SessionsRepository(this.ds, manager.getRepository(Session));
+    const newRepo = new SessionsRepository(this.ds);
+    newRepo.repo = manager.getRepository(Session);
+    return newRepo;
   }
 
   findById(id: number): Promise<Session | null> {
