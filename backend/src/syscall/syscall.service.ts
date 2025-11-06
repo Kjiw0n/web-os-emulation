@@ -45,6 +45,10 @@ export class SyscallService {
           stderr: err.message || 'An unexpected error occurred',
         };
       }
+      return {
+        stdout: '',
+        stderr: String(err) || 'An unexpected non-Error was thrown',
+      };
     }
   }
 }
