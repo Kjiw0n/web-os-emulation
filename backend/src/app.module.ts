@@ -4,9 +4,34 @@ import { AppService } from './app.service';
 import { WindowsModule } from './windows/windows.module';
 import { FileSystemModule } from './file-system/file-system.module';
 import { SessionsModule } from './sessions/sessions.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [WindowsModule, FileSystemModule, SessionsModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: configService.get('DB_SYNCHRONIZE'),
+        logging: true,
+      }),
+      inject: [ConfigService],
+    }),
+    WindowsModule,
+    FileSystemModule,
+    SessionsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
