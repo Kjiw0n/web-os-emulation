@@ -31,8 +31,15 @@ jobs:
       contains(github.event.head_commit.message, '[skip ci]') == false &&
       (
         github.event_name == 'workflow_dispatch' ||
-        exists(github.event.commits) && contains(join(github.event.commits.*.modified, ' '), 'backend/') ||
-        exists(github.event.commits) && contains(join(github.event.commits.*.added, ' '), 'backend/')
+        (
+          github.event_name == 'push' &&
+          (
+            contains(join(github.event.commits.*.modified, ' '), 'backend/') ||
+            contains(join(github.event.commits.*.added, ' '), 'backend/') ||
+            contains(join(github.event.commits.*.modified, ' '), '.github/workflows/deploy-backend.yml') ||
+            contains(join(github.event.commits.*.added, ' '), '.github/workflows/deploy-backend.yml')
+          )
+        )
       )
 
     steps:
@@ -67,6 +74,8 @@ jobs:
     # [핵심] build 작업이 성공적으로 끝나야만 실행됨
     # (build가 스킵된 경우에도 실행됨 - compose.yml만 바뀐 경우)
     needs: build
+
+    if: ${{ needs.build.result == 'success' || needs.build.result == 'skipped' }}
 
     steps:
       # (배포 단계에서는 compose.yml 파일만 필요)
