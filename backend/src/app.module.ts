@@ -6,6 +6,7 @@ import { FileSystemModule } from './file-system/file-system.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SyscallModule } from './syscall/syscall.module';
 
 @Module({
   imports: [
@@ -28,10 +29,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
       inject: [ConfigService],
     }),
+    SyscallModule,
     WindowsModule,
     FileSystemModule,
     SessionsModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })

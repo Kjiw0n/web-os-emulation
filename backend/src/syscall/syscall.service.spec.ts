@@ -1,0 +1,65 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { SyscallService } from './syscall.service';
+import { DateHandler } from './handlers/builtins/date.handler';
+import { SyscallDto } from './dto/syscall.dto';
+import { HelpHandler } from './handlers/builtins/help.handler';
+
+describe('SyscallService', () => {
+  let service: SyscallService;
+  let dateHandler: DateHandler;
+  let helpHandler: HelpHandler;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [SyscallService, DateHandler, HelpHandler],
+    }).compile();
+
+    service = module.get<SyscallService>(SyscallService);
+    dateHandler = module.get<DateHandler>(DateHandler);
+    helpHandler = module.get<HelpHandler>(HelpHandler);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('date command', () => {
+    it('should return current date string', async () => {
+      // given
+      const dto: SyscallDto = { command: 'date', data: '' };
+      const spy = jest
+        .spyOn(dateHandler, 'execute')
+        .mockResolvedValue({ stdout: 'Thu Nov 6 2025', stderr: '' });
+
+      // when
+      const result = await service.handleCommand(dto);
+
+      // then
+      expect(spy).toHaveBeenCalled();
+      expect(result.stdout).toContain('Thu Nov');
+      expect(result.stderr).toBe('');
+    });
+  });
+
+  describe('help command', () => {
+    it('should return help message', async () => {
+      // given
+      const dto: SyscallDto = { command: 'help', data: '' };
+      const spy = jest
+        .spyOn(helpHandler, 'execute')
+        .mockResolvedValue({
+          stdout:
+            '사용 가능한 명령어:\n- date: 현재 날짜 및 시간 표시\n- help: 명령어 목록 표시\n- uname: OS 이름 및 버전 표시',
+          stderr: '',
+        });
+
+      // when
+      const result = await service.handleCommand(dto);
+
+      // then
+      expect(spy).toHaveBeenCalled();
+      expect(result.stdout).toContain('사용 가능한 명령어');
+      expect(result.stderr).toBe('');
+    });
+  });
+});

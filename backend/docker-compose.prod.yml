@@ -1,0 +1,45 @@
+services:
+  # 1. NestJS App 서비스 (프로덕션)
+  app:
+    # 'build' 대신 레지스트리에 푸시된 이미지를 사용
+    # 예: ncp-container-registry/my-nest-app:latest
+    image: webos-nestjs.kr.ncr.ntruss.com/webos-nestjs/app:latest
+    restart: always # 컨테이너 비정상 종료 시 항상 재시작
+    depends_on:
+      - db
+    ports:
+      - '3000:3000' # 앱 포트만 외부에 노출
+    environment:
+      # .env 파일에서 환경 변수를 읽어옴
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      NODE_ENV: production
+    networks:
+      - my-network
+    # [차이점] 소스 코드 볼륨 마운트 제거
+
+  # 2. MySQL DB 서비스 (프로덕션)
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD} # .env 파일에서 읽어옴
+      MYSQL_DATABASE: ${DB_NAME} # .env 파일에서 읽어옴
+    # [차이점] ports: '3306:3306' 제거 (보안)
+    # (같은 네트워크의 'app' 서비스만 'db:3306'으로 접근 가능)
+    volumes:
+      - db-data:/var/lib/mysql # 데이터 영속성 유지
+    networks:
+      - my-network
+
+# 서비스 간 통신을 위한 네트워크 정의
+networks:
+  my-network:
+    driver: bridge
+
+# DB 데이터 영속성을 위한 볼륨 정의
+volumes:
+  db-data:
