@@ -1,5 +1,5 @@
 import Icn from "@/assets/Icons";
-import { Terminal } from "@/components/apps/Terminal";
+import { Terminal } from "@/components/apps/Terminal/Terminal";
 import { Window } from "@/components/Window";
 import { useState } from "react";
 
