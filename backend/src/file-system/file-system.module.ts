@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { FileSystemService } from './file-system.service';
 import { FileSystemController } from './file-system.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { FileSystem } from './entities';
+import { FileSystemRepository } from './file-system.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FileSystem])],
+  imports: [],
   controllers: [FileSystemController],
-  providers: [FileSystemService],
-  exports: [TypeOrmModule],
+  providers: [FileSystemService, FileSystemRepository],
+  exports: [FileSystemRepository],
 })
 export class FileSystemModule {}

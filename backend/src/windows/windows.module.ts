@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { WindowsService } from './windows.service';
 import { WindowsController } from './windows.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Window } from './entities/window.entity';
+import { WindowsRepository } from './windows.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Window])],
+  imports: [],
   controllers: [WindowsController],
-  providers: [WindowsService],
-  exports: [TypeOrmModule],
+  providers: [WindowsService, WindowsRepository],
+  exports: [WindowsRepository],
 })
 export class WindowsModule {}
