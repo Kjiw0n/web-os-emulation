@@ -1,18 +1,4 @@
-<div style="
-    background-color: #FFF9E5;
-    color: #333;
-    padding: 20px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 1.2rem;
-    font-weight: 600;
-    text-align: center;
-    max-width: 600px;
-    margin: 20px auto;
-">
-  팀 <span style="color:#FF6B6B;">욧시욧시</span>의 Web OS Emulation 프로젝트 공간입니다!
-</div>
+팀 **욧시욧시**의 **Web OS Emulation** 프로젝트 공간입니다!
 
 
 ### 팀원 소개
