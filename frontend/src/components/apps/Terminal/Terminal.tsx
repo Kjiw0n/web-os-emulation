@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { requestSyscall } from "./syscall";
 
 interface TerminalProps {
   isDarkMode: boolean;
@@ -19,37 +20,36 @@ export function Terminal({ isDarkMode }: TerminalProps) {
     }
   }, [output]);
 
-  const handleCommand = (cmd: string) => {
-    // syscall/ API 연결 시 밑에 내용 삭제 예정
-    const trimmed = cmd.trim().toLowerCase();
+  const handleCommand = async (cmd: string) => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return;
+
     const newOutput = [...output, `$ ${cmd}`];
-
-    if (trimmed === "help") {
-      newOutput.push("Available commands:");
-      newOutput.push("  help - Show this help message");
-      newOutput.push("  clear - Clear the terminal");
-      newOutput.push("  date - Show current date and time");
-      newOutput.push("  echo [text] - Echo the text");
-    } else if (trimmed === "clear") {
-      setOutput([]);
-      setInput("");
-      return;
-    } else if (trimmed === "date") {
-      newOutput.push(new Date().toString());
-    } else if (trimmed.startsWith("echo ")) {
-      newOutput.push(cmd.substring(5));
-    } else if (trimmed === "") {
-      newOutput.push("");
-    } else {
-      newOutput.push(`Command not found: ${cmd}`);
-    }
-
-    newOutput.push("");
-    setOutput(newOutput);
     setInput("");
+
+    try {
+      const res = await requestSyscall({ command: trimmed });
+      const stdout = res.stdout.trim();
+
+      if (stdout === "CLEAR") {
+        setOutput([]);
+        return;
+      }
+
+      setOutput([...newOutput, stdout, ""]);
+    } catch (error) {
+      console.error(error);
+      setOutput([
+        ...newOutput,
+        "Error: Failed to execute command. Please try again.",
+        "",
+      ]);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    console.log(import.meta.env.VITE_API_BASE_URL);
+
     if (e.key === "Enter") {
       handleCommand(input);
     }
