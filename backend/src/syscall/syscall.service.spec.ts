@@ -20,7 +20,7 @@ describe('SyscallService', () => {
     expect(service).toBeDefined();
   });
 
-    describe('date command', () => {
+  describe('date command', () => {
     it('should return current date string', async () => {
       // given
       const dto: SyscallDto = { command: 'date', data: '' };
