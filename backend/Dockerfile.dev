@@ -1,0 +1,20 @@
+# Dockerfile.dev
+
+# Node.js 22 버전을 기반으로 시작합니다.
+FROM node:22-alpine
+
+# 작업 디렉토리를 설정합니다.
+WORKDIR /usr/src/app
+
+# package.json과 package-lock.json을 먼저 복사합니다.
+COPY package.json package-lock.json ./
+
+# [차이점 1] 개발용 의존성을 포함하여 모든 패키지를 설치합니다.
+RUN npm install
+
+# (참고) 소스 코드는 docker-compose.yml의 'volumes' 옵션으로 연결(마운트)할 것이므로
+# 여기서 미리 COPY . . 를 할 필요는 없습니다. (해도 무방함)
+# COPY . .
+
+# [차이점 2] NestJS의 핫 리로딩 개발 서버를 실행합니다.
+CMD ["npm", "run", "start:dev"]
