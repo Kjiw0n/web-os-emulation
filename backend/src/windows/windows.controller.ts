@@ -8,16 +8,19 @@ import {
   Delete,
 } from '@nestjs/common';
 import { WindowsService } from './windows.service';
-import { CreateWindowDto } from './dto/create-window.dto';
-import { UpdateWindowDto } from './dto/update-window.dto';
+import {
+  CreateWindowDto,
+  CreateWindowResponseDto,
+  UpdateWindowDto,
+} from './dto';
 
 @Controller('windows')
 export class WindowsController {
   constructor(private readonly windowsService: WindowsService) {}
 
-  @Post()
-  create(@Body() createWindowDto: CreateWindowDto) {
-    return this.windowsService.create(createWindowDto);
+  @Post('open')
+  openWindow(@Body() dto: CreateWindowDto): Promise<CreateWindowResponseDto> {
+    return this.windowsService.create(dto);
   }
 
   @Get()
