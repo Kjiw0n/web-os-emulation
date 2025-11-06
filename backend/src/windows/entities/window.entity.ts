@@ -71,4 +71,33 @@ export class Window {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  static create(
+    title: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    zIndex: number,
+    windowType: WindowType = WindowType.TERMINAL,
+    sessionId?: number,
+  ): Window {
+    // 코드 레벨에서 Terminal 생성 시 sessionId를 필수값으로 검증
+    if (windowType === WindowType.TERMINAL && !sessionId) {
+      throw new Error('Terminal window requires sessionId');
+    }
+
+    const window = new Window();
+    window.title = title;
+    window.x = x;
+    window.y = y;
+    window.width = width;
+    window.height = height;
+    window.zIndex = zIndex;
+    window.windowType = windowType;
+    window.sessionId = sessionId ?? null;
+    window.isOpen = true;
+
+    return window;
+  }
 }
