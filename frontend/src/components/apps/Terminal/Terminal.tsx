@@ -30,9 +30,15 @@ export function Terminal({ isDarkMode }: TerminalProps) {
     try {
       const res = await requestSyscall({ command: trimmed });
       const stdout = res.stdout.trim();
+      const stderr = res.stderr?.trim();
 
       if (stdout === "CLEAR") {
         setOutput([]);
+        return;
+      }
+
+      if (stderr) {
+        setOutput([...newOutput, `Error: ${stderr}`, ""]);
         return;
       }
 
@@ -64,7 +70,18 @@ export function Terminal({ isDarkMode }: TerminalProps) {
       {/* 출력창 */}
       <div ref={outputRef} className="mb-2 flex-1 overflow-auto">
         {output.map((line, i) => (
-          <div key={i}>{line}</div>
+          <div
+            key={i}
+            className={
+              line.startsWith("Error:")
+                ? isDarkMode
+                  ? "text-red-400"
+                  : "text-red-600"
+                : ""
+            }
+          >
+            {line}
+          </div>
         ))}
       </div>
 
