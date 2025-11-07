@@ -1,7 +1,12 @@
 import axios from "axios";
 
+const baseURL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://web01os.duckdns.org";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL,
   timeout: 5000,
 });
 

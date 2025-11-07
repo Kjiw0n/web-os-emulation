@@ -6,10 +6,10 @@ interface BootPageProps {
 
 const BootPage = ({ onBoot }: BootPageProps) => {
   return (
-    <div className="bg-gray-1 flex h-full w-full items-center justify-center">
+    <div className="flex h-full w-full items-center justify-center bg-gray-1 text-white">
       <button
         onClick={onBoot}
-        className="bg-gray-3 flex items-center justify-center rounded-full p-8 hover:bg-gray-600"
+        className="flex items-center justify-center rounded-full bg-gray-3 p-8 hover:bg-gray-600"
       >
         <Icn.PowerBig className="h-16 w-16" />
       </button>
