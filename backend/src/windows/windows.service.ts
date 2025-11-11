@@ -3,11 +3,8 @@ import { CreateWindowDto } from './dto/create-window.dto';
 import { UpdateWindowDto } from './dto/update-window.dto';
 import { DataSource } from 'typeorm';
 import { WindowsRepository } from './windows.repository';
-import { SessionsRepository } from 'src/sessions/sessions.repository';
 import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { Window } from './entities';
-import { WindowType } from './types';
-import { Session } from 'src/sessions/entities';
 import { CreateWindowResponseDto } from './dto';
 
 @Injectable()
@@ -15,34 +12,39 @@ export class WindowsService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly windowsRepo: WindowsRepository,
-    private readonly sessionsRepo: SessionsRepository,
     private readonly fileSystemRepo: FileSystemRepository,
   ) {}
 
   async create(dto: CreateWindowDto): Promise<CreateWindowResponseDto> {
     const result = this.dataSource.transaction(async (manager) => {
       const txWindowRepo = this.windowsRepo.withManager(manager);
-      const txSessionRepo = this.sessionsRepo.withManager(manager);
       const txFileSystemRepo = this.fileSystemRepo.withManager(manager);
 
       // 1. 최대 z_index 조회 (FOR UPDATE)
       const topWindow = await txWindowRepo.getTopWindowForUpdate();
       const nextZIndex = topWindow ? topWindow.zIndex + 1 : 1;
 
-      // 2. window_type이 terminal이면 세션 생성
-      let sessionId: number | undefined;
-      if (dto.windowType === WindowType.TERMINAL) {
-        const rootDir = await txFileSystemRepo.getRootDirectory();
-        if (!rootDir) {
-          throw new NotFoundException(
-            'Root directory not found. Please run seed.',
-          );
-        }
+      // 2. Process 생성
+      const programName = dto.program || 'shell'; // 기본값: shell
 
-        const session = Session.create(rootDir.id);
-        const savedSession = await txSessionRepo.save(session);
-        sessionId = savedSession.id;
+      const rootDir = await txFileSystemRepo.findByDirName('root');
+      if (!rootDir) {
+        throw new NotFoundException(
+          'Root directory not found. Please run seed.',
+        );
       }
+
+      // TODO: Process 생성
+      // const process = Process.create(
+      //   programName,           // name
+      //   null,                  // file_id (시스템 프로세스)
+      //   rootDir.id             // current_directory_id
+      // );
+      // const savedProcess = await txProcessRepo.save(process);
+      // const processId = savedProcess.id;
+
+      // 임시: Process 구현 전까지는 임시값
+      const processId = 1;
 
       // 3. Window 생성
       const window = Window.create(
@@ -52,8 +54,7 @@ export class WindowsService {
         dto.width,
         dto.height,
         nextZIndex,
-        dto.windowType || WindowType.TERMINAL,
-        sessionId,
+        processId,
       );
 
       const savedWindow = await txWindowRepo.save(window);
@@ -66,6 +67,8 @@ export class WindowsService {
         z: savedWindow.zIndex,
         width: savedWindow.width,
         height: savedWindow.height,
+        processId: savedWindow.processId,
+        programName: programName,
       };
     });
 
