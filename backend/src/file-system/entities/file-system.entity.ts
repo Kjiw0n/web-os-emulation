@@ -38,7 +38,7 @@ export class FileSystem {
   })
   physicalPath: string | null;
 
-  @Column({ name: 'img_url', nullable: true })
+  @Column({ type: 'varchar', name: 'img_url', nullable: true })
   imgUrl: string | null;
 
   /**
