@@ -2,6 +2,7 @@ import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFileSystemDto } from './dto/create-file-system.dto';
 import { UpdateFileSystemDto } from './dto/update-file-system.dto';
+import { FileSystem } from './entities/file-system.entity';
 import { FileType } from './types';
 
 @Injectable()
