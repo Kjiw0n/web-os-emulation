@@ -10,7 +10,7 @@ async function seed() {
     const fileSystemRepo = AppDataSource.getRepository(FileSystem);
 
     // 이미 데이터가 있는지 확인
-    const existing = await fileSystemRepo.findOne({ where: { path: '/' } });
+    const existing = await fileSystemRepo.findOne({ where: { name: 'root' } });
     if (existing) {
       console.log('Seed data already exists. Skipping...');
       await AppDataSource.destroy();
@@ -19,12 +19,11 @@ async function seed() {
 
     // 루트 디렉토리 생성
     const root = fileSystemRepo.create({
-      name: '/',
+      name: 'root',
       type: FileType.DIRECTORY,
-      path: '/',
       parentId: null,
       size: '0',
-      permissions: 'rwxr-xr-x',
+      permissions: 'rwx',
     });
     await fileSystemRepo.save(root);
     console.log('Created root directory');
@@ -40,10 +39,9 @@ async function seed() {
       const directory = fileSystemRepo.create({
         name: dir.name,
         type: FileType.DIRECTORY,
-        path: dir.path,
         parentId: root.id,
         size: '0',
-        permissions: 'rwxr-xr-x',
+        permissions: 'rwx',
       });
       await fileSystemRepo.save(directory);
       console.log(`Created directory: ${dir.path}`);

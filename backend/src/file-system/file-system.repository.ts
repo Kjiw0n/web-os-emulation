@@ -16,12 +16,8 @@ export class FileSystemRepository {
     return newRepo;
   }
 
-  async getRootDirectory(): Promise<FileSystem | null> {
-    return this.repo.findOne({ where: { path: '/' } });
-  }
-
-  async findByPath(path: string): Promise<FileSystem | null> {
-    return this.repo.findOne({ where: { path } });
+  async findByDirName(name: string): Promise<FileSystem | null> {
+    return this.repo.findOne({ where: { name } });
   }
 
   async save(fileSystem: FileSystem): Promise<FileSystem> {

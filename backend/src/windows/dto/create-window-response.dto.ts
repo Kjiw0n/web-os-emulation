@@ -6,4 +6,6 @@ export class CreateWindowResponseDto {
   z: number;
   width: number;
   height: number;
+  processId: number | null;
+  programName: string;
 }
