@@ -6,6 +6,8 @@ import { WindowsRepository } from './windows.repository';
 import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { Window } from './entities';
 import { CreateWindowResponseDto } from './dto';
+import { ProcessesRepository } from 'src/processes/processes.repository';
+import { Process } from 'src/processes/entities';
 
 @Injectable()
 export class WindowsService {
@@ -13,19 +15,21 @@ export class WindowsService {
     private readonly dataSource: DataSource,
     private readonly windowsRepo: WindowsRepository,
     private readonly fileSystemRepo: FileSystemRepository,
+    private readonly processesRepo: ProcessesRepository,
   ) {}
 
   async create(dto: CreateWindowDto): Promise<CreateWindowResponseDto> {
     const result = this.dataSource.transaction(async (manager) => {
       const txWindowRepo = this.windowsRepo.withManager(manager);
       const txFileSystemRepo = this.fileSystemRepo.withManager(manager);
+      const txProcessRepo = this.processesRepo.withManager(manager);
 
       // 1. 최대 z_index 조회 (FOR UPDATE)
       const topWindow = await txWindowRepo.getTopWindowForUpdate();
       const nextZIndex = topWindow ? topWindow.zIndex + 1 : 1;
 
       // 2. Process 생성
-      const programName = dto.program || 'shell'; // 기본값: shell
+      const programName = dto.program ?? 'shell';
 
       const rootDir = await txFileSystemRepo.findByDirName('root');
       if (!rootDir) {
@@ -34,17 +38,10 @@ export class WindowsService {
         );
       }
 
-      // TODO: Process 생성
-      // const process = Process.create(
-      //   programName,           // name
-      //   null,                  // file_id (시스템 프로세스)
-      //   rootDir.id             // current_directory_id
-      // );
-      // const savedProcess = await txProcessRepo.save(process);
-      // const processId = savedProcess.id;
+      const process = Process.create(programName, null, rootDir.id);
 
-      // 임시: Process 구현 전까지는 임시값
-      const processId = 1;
+      const savedProcess = await txProcessRepo.save(process);
+      const processId = savedProcess.id;
 
       // 3. Window 생성
       const window = Window.create(
