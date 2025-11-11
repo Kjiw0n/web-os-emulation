@@ -30,9 +30,6 @@ export class FileSystem {
   @Column({ type: 'enum', enum: FileType })
   type: FileType;
 
-  @Column({ type: 'varchar', length: 768, unique: true })
-  path: string;
-
   @Column({
     name: 'physical_path',
     type: 'varchar',
@@ -41,15 +38,15 @@ export class FileSystem {
   })
   physicalPath: string | null;
 
+  @Column({ name: 'img_url', nullable: true })
+  imgUrl: string | null;
+
   /**
    * number인 경우 2GB 이상 파일은 오버플로우 가능해서 string으로 처리
    * bigint인 경우 JSON 직렬화 제한
    */
   @Column({ type: 'bigint', default: 0 })
   size: string;
-
-  @Column({ name: 'mime_type', type: 'varchar', length: 100, nullable: true })
-  mimeType: string | null;
 
   @Column({
     name: 'file_extension',
@@ -59,18 +56,12 @@ export class FileSystem {
   })
   fileExtension: string | null;
 
-  @Column({ type: 'varchar', length: 10, default: 'rwxr-xr-x' })
+  @Column({ type: 'varchar', length: 10, default: 'rwx' })
   permissions: string;
-
-  @Column({ name: 'is_hidden', type: 'boolean', default: false })
-  isHidden: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-
-  @Column({ type: 'timestamp', nullable: true })
-  accessedAt: Date | null;
 }
