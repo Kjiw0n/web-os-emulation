@@ -3,6 +3,7 @@ import { SyscallDto } from './dto/syscall.dto';
 import { CommandResult, ICommandHandler } from './handlers/command.interface';
 import { DateHandler } from './handlers/builtins/date.handler';
 import { HelpHandler } from './handlers/builtins/help.handler';
+import { LsHandler } from './handlers/file-system/ls.handler';
 
 @Injectable()
 export class SyscallService {
@@ -11,10 +12,12 @@ export class SyscallService {
   constructor(
     private readonly dateHandler: DateHandler,
     private readonly helpHandler: HelpHandler,
+    private readonly lsHandler: LsHandler,
   ) {
     // 핸들러 등록
     this.handlers.set('date', this.dateHandler);
     this.handlers.set('help', this.helpHandler);
+    this.handlers.set('ls', this.lsHandler);
   }
 
   // TODO: DI를 통해서 각 핸들러를 주입받아야 함
