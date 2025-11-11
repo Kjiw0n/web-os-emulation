@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WindowsModule } from './windows/windows.module';
 import { FileSystemModule } from './file-system/file-system.module';
-import { SessionsModule } from './sessions/sessions.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyscallModule } from './syscall/syscall.module';
@@ -32,7 +31,6 @@ import { SyscallModule } from './syscall/syscall.module';
     SyscallModule,
     WindowsModule,
     FileSystemModule,
-    SessionsModule,
   ],
 
   controllers: [AppController],
