@@ -3,6 +3,8 @@ import { SyscallService } from './syscall.service';
 import { DateHandler } from './handlers/builtins/date.handler';
 import { SyscallDto } from './dto/syscall.dto';
 import { HelpHandler } from './handlers/builtins/help.handler';
+import { UnameHandler } from './handlers/builtins/uname.handler';
+import * as os from 'os';
 
 describe('SyscallService', () => {
   let service: SyscallService;
@@ -59,6 +61,29 @@ describe('SyscallService', () => {
       // then
       expect(spy).toHaveBeenCalled();
       expect(result.stdout).toContain('사용 가능한 명령어');
+      expect(result.stderr).toBe('');
+    });
+  });
+  
+  describe('uname command', () => {
+    it('should return OS information', async () => {
+      // given
+      const dto: SyscallDto = { command: 'uname', data: '' };
+      const expectedUname = `${os.platform()} ${os.release()} ${os.arch()}`;
+      const unameHandler = new UnameHandler();
+      const spy = jest
+        .spyOn(unameHandler, 'execute')
+        .mockResolvedValue({
+          stdout: expectedUname,
+          stderr: '',
+        });
+
+      // when
+      const result = await unameHandler.execute([]);
+
+      // then
+      expect(spy).toHaveBeenCalled();
+      expect(result.stdout).toBe(expectedUname);
       expect(result.stderr).toBe('');
     });
   });
