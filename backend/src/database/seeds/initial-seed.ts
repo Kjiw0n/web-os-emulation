@@ -41,7 +41,7 @@ async function seed() {
         type: FileType.DIRECTORY,
         parentId: root.id,
         size: '0',
-        permissions: 'rwxr-xr-x',
+        permissions: 'rwx',
       });
       await fileSystemRepo.save(directory);
       console.log(`Created directory: ${dir.path}`);
