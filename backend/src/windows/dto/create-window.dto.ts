@@ -1,12 +1,4 @@
-import {
-  IsString,
-  IsInt,
-  IsEnum,
-  IsOptional,
-  Min,
-  MaxLength,
-} from 'class-validator';
-import { WindowType } from '../types';
+import { IsString, IsInt, Min, MaxLength, IsOptional } from 'class-validator';
 
 export class CreateWindowDto {
   @IsString()
@@ -27,7 +19,7 @@ export class CreateWindowDto {
   @Min(100)
   height: number;
 
-  @IsEnum(WindowType)
   @IsOptional()
-  windowType?: WindowType = WindowType.TERMINAL;
+  @IsString()
+  program?: string;
 }
