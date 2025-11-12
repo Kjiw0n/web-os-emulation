@@ -6,10 +6,19 @@ import { HelpHandler } from './handlers/builtins/help.handler';
 import { LsHandler } from './handlers/file-system/ls.handler';
 import { FileSystemModule } from 'src/file-system/file-system.module';
 import { UnameHandler } from './handlers/builtins/uname.handler';
+import { PwdHandler } from './handlers/file-system/pwd.handler';
+import { ProcessesModule } from 'src/processes/processes.module';
 
 @Module({
-  imports: [FileSystemModule],
+  imports: [FileSystemModule, ProcessesModule],
   controllers: [SyscallController],
-  providers: [SyscallService, DateHandler, HelpHandler, LsHandler, UnameHandler],
+  providers: [
+    SyscallService,
+    DateHandler,
+    HelpHandler,
+    LsHandler,
+    UnameHandler,
+    PwdHandler,
+  ],
 })
 export class SyscallModule {}
