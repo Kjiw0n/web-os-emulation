@@ -38,8 +38,8 @@ export class FileSystem {
   })
   physicalPath: string | null;
 
-  @Column({ type: 'varchar', name: 'img_url', nullable: true })
-  imgUrl: string | null;
+  @Column({ type: 'varchar', name: 'content_url', nullable: true })
+  contentUrl: string | null;
 
   /**
    * number인 경우 2GB 이상 파일은 오버플로우 가능해서 string으로 처리
