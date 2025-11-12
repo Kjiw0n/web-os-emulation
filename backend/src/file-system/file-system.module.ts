@@ -7,6 +7,6 @@ import { FileSystemRepository } from './file-system.repository';
   imports: [],
   controllers: [FileSystemController],
   providers: [FileSystemService, FileSystemRepository],
-  exports: [FileSystemRepository],
+  exports: [FileSystemService, FileSystemRepository],
 })
 export class FileSystemModule {}
