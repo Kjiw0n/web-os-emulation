@@ -40,6 +40,7 @@ export class PwdHandler implements ICommandHandler {
 
     return {
       stdout: path,
+      stderr: '',
     };
   }
 }
