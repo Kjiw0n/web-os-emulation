@@ -4,6 +4,10 @@ export interface CommandResult {
   stderr?: string; // 터미널 표준 에러
 }
 
+export interface CommandContext {
+  processId: number;
+}
+
 // 모든 핸들러가 구현할 인터페이스
 export interface ICommandHandler {
   // e.g. command: "ls /home" -> args: ["/home"]
@@ -12,5 +16,6 @@ export interface ICommandHandler {
   execute(
     args: string[],
     data?: string,
+    context?: CommandContext,
   ): Promise<CommandResult> | CommandResult;
 }
