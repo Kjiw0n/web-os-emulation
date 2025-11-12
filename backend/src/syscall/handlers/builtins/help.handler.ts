@@ -1,5 +1,5 @@
-import { ICommandHandler, CommandResult } from "../command.interface";
-import { Injectable } from "@nestjs/common";
+import { ICommandHandler, CommandResult } from '../command.interface';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class HelpHandler implements ICommandHandler {
@@ -10,6 +10,6 @@ export class HelpHandler implements ICommandHandler {
       '- help: 명령어 목록 표시',
       '- uname: OS 이름 및 버전 표시',
     ].join('\n');
-  return { stdout: helpText.trim(), stderr: '' };
+    return { stdout: helpText.trim(), stderr: '' };
   }
 }

@@ -7,6 +7,7 @@ import {
 } from './handlers/command.interface';
 import { DateHandler } from './handlers/builtins/date.handler';
 import { HelpHandler } from './handlers/builtins/help.handler';
+import { ClearHandler } from './handlers/builtins/clear.handler';
 import { LsHandler } from './handlers/file-system/ls.handler';
 import { UnameHandler } from './handlers/builtins/uname.handler';
 import { PwdHandler } from './handlers/file-system/pwd.handler';
@@ -18,6 +19,7 @@ export class SyscallService {
   constructor(
     private readonly dateHandler: DateHandler,
     private readonly helpHandler: HelpHandler,
+    private readonly clearHandler: ClearHandler,
     private readonly lsHandler: LsHandler,
     private readonly unameHandler: UnameHandler,
     private readonly pwdHandler: PwdHandler,
@@ -25,6 +27,7 @@ export class SyscallService {
     // 핸들러 등록
     this.handlers.set('date', this.dateHandler);
     this.handlers.set('help', this.helpHandler);
+    this.handlers.set('clear', this.clearHandler);
     this.handlers.set('ls', this.lsHandler);
     this.handlers.set('uname', this.unameHandler);
     this.handlers.set('pwd', this.pwdHandler);
