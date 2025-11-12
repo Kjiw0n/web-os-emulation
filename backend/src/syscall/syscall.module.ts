@@ -6,10 +6,11 @@ import { HelpHandler } from './handlers/builtins/help.handler';
 import { LsHandler } from './handlers/file-system/ls.handler';
 import { FileSystemModule } from 'src/file-system/file-system.module';
 import { UnameHandler } from './handlers/builtins/uname.handler';
+import { WriteHandler } from './handlers/file-system/write.handler';
 
 @Module({
   imports: [FileSystemModule],
   controllers: [SyscallController],
-  providers: [SyscallService, DateHandler, HelpHandler, LsHandler, UnameHandler],
+  providers: [SyscallService, DateHandler, HelpHandler, LsHandler, UnameHandler, WriteHandler],
 })
 export class SyscallModule {}
