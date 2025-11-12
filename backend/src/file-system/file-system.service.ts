@@ -82,4 +82,33 @@ export class FileSystemService {
     // 자식 노드 목록을 조회하여 반환
     return this.fileSystemRepository.findChildrenByParentId(targetNode.id);
   }
+
+  /**
+   * 디렉토리 ID로부터 루트까지의 절대 경로를 구성
+   * @param directoryId - 경로를 구할 디렉토리 ID
+   * @returns - 절대 경로 문자열 (예: "/root/documents")
+   * @throws {Error} - 경로 구성 중 노드를 찾지 못한 경우
+   */
+  async buildPath(directoryId: number): Promise<string> {
+    const parts: string[] = [];
+    let currentId: number | null = directoryId;
+
+    while (currentId !== null) {
+      const directory = await this.fileSystemRepository.findById(currentId);
+
+      if (!directory) {
+        throw new Error('경로 구성 중 디렉토리를 찾을 수 없습니다.');
+      }
+
+      // 루트가 아니면 이름 추가
+      if (directory.parentId !== null) {
+        parts.unshift(directory.name); // FIXME: push 후 reverse로 수정?
+      }
+
+      currentId = directory.parentId;
+    }
+
+    // 루트는 항상 '/'
+    return '/' + parts.join('/');
+  }
 }
