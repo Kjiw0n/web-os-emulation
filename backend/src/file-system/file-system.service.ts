@@ -1,33 +1,11 @@
 import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateFileSystemDto } from './dto/create-file-system.dto';
-import { UpdateFileSystemDto } from './dto/update-file-system.dto';
 import { FileSystem } from './entities/file-system.entity';
 import { FileType } from './types';
 
 @Injectable()
 export class FileSystemService {
   constructor(private readonly fileSystemRepository: FileSystemRepository) {}
-
-  create(createFileSystemDto: CreateFileSystemDto) {
-    return 'This action adds a new fileSystem';
-  }
-
-  findAll() {
-    return `This action returns all fileSystem`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} fileSystem`;
-  }
-
-  update(id: number, updateFileSystemDto: UpdateFileSystemDto) {
-    return `This action updates a #${id} fileSystem`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} fileSystem`;
-  }
 
   /**
    * 절대 경로 문자열을 기반으로 FileSystem 엔티티를 찾습니다.
