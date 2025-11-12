@@ -4,10 +4,14 @@ import { CreateFileSystemDto } from './dto/create-file-system.dto';
 import { UpdateFileSystemDto } from './dto/update-file-system.dto';
 import { FileSystem } from './entities/file-system.entity';
 import { FileType } from './types';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class FileSystemService {
-  constructor(private readonly fileSystemRepository: FileSystemRepository) {}
+  constructor(
+    private readonly fileSystemRepository: FileSystemRepository,
+    private readonly s3Service: S3Service,
+  ) {}
 
   create(createFileSystemDto: CreateFileSystemDto) {
     return 'This action adds a new fileSystem';
@@ -81,5 +85,36 @@ export class FileSystemService {
 
     // 자식 노드 목록을 조회하여 반환
     return this.fileSystemRepository.findChildrenByParentId(targetNode.id);
+  }
+
+  /**
+   * write 명령어 로직
+   * 절대 경로를 기반으로 파일 생성
+   * @param path - 디렉토리 절대 경로 (예: "/home/usr")
+   * @param fileName - 파일 이름 (예: "hello.txt")
+   * @param content - 파일 내용
+   */
+  async writeFile(path: string, fileName: string, content: string) {
+    const parentDir = await this.findNodeByAbsolutePath(path);
+
+    if (parentDir.type !== FileType.DIRECTORY) {
+      throw new Error(`'${path}'는 디렉토리가 아닙니다.`);
+    }
+
+    // S3에 파일 업로드
+    const contentUrl = await this.s3Service.uploadFile(content, fileName);
+
+    // 파일 엔티티 생성
+    const newFile = new FileSystem();
+    newFile.name = fileName;
+    newFile.type = FileType.FILE;
+    newFile.parentId = parentDir.id;
+    newFile.contentUrl = contentUrl;
+    newFile.size = content.length.toString();
+    newFile.fileExtension = fileName.split('.').pop() || null;
+    newFile.permissions = 'rw-';
+
+    // 파일 엔티티 저장
+    return await this.fileSystemRepository.save(newFile);
   }
 }
