@@ -5,6 +5,7 @@ import { DateHandler } from './handlers/builtins/date.handler';
 import { HelpHandler } from './handlers/builtins/help.handler';
 import { LsHandler } from './handlers/file-system/ls.handler';
 import { UnameHandler } from './handlers/builtins/uname.handler';
+import { WriteHandler } from './handlers/file-system/write.handler';
 
 @Injectable()
 export class SyscallService {
@@ -15,12 +16,14 @@ export class SyscallService {
     private readonly helpHandler: HelpHandler,
     private readonly lsHandler: LsHandler,
     private readonly unameHandler: UnameHandler,
+    private readonly writeHandler: WriteHandler,
   ) {
     // 핸들러 등록
     this.handlers.set('date', this.dateHandler);
     this.handlers.set('help', this.helpHandler);
     this.handlers.set('ls', this.lsHandler);
     this.handlers.set('uname', this.unameHandler);
+    this.handlers.set('write', this.writeHandler);
   }
 
   // TODO: DI를 통해서 각 핸들러를 주입받아야 함
