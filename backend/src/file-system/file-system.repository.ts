@@ -16,6 +16,10 @@ export class FileSystemRepository {
     return newRepo;
   }
 
+  async findById(id: number): Promise<FileSystem | null> {
+    return this.repo.findOne({ where: { id } });
+  }
+
   async findByDirName(name: string): Promise<FileSystem | null> {
     return this.repo.findOne({ where: { name } });
   }
