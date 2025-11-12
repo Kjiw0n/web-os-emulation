@@ -30,9 +30,9 @@ async function seed() {
 
     // /root, /program, /example 생성
     const directories = [
-      { name: 'root', path: '/root' },
-      { name: 'program', path: '/program' },
-      { name: 'example', path: '/example' },
+      { name: 'home' },
+      { name: 'program' },
+      { name: 'example' },
     ];
 
     for (const dir of directories) {
@@ -44,7 +44,7 @@ async function seed() {
         permissions: 'rwx',
       });
       await fileSystemRepo.save(directory);
-      console.log(`Created directory: ${dir.path}`);
+      console.log(`Created directory: ${dir.name}`);
     }
 
     console.log('Seed completed successfully');

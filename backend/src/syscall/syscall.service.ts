@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { SyscallDto } from './dto/syscall.dto';
-import { CommandResult, ICommandHandler } from './handlers/command.interface';
+import {
+  CommandContext,
+  CommandResult,
+  ICommandHandler,
+} from './handlers/command.interface';
 import { DateHandler } from './handlers/builtins/date.handler';
 import { HelpHandler } from './handlers/builtins/help.handler';
 import { LsHandler } from './handlers/file-system/ls.handler';
 import { UnameHandler } from './handlers/builtins/uname.handler';
 import { WriteHandler } from './handlers/file-system/write.handler';
+import { PwdHandler } from './handlers/file-system/pwd.handler';
 
 @Injectable()
 export class SyscallService {
@@ -17,6 +22,7 @@ export class SyscallService {
     private readonly lsHandler: LsHandler,
     private readonly unameHandler: UnameHandler,
     private readonly writeHandler: WriteHandler,
+    private readonly pwdHandler: PwdHandler,
   ) {
     // 핸들러 등록
     this.handlers.set('date', this.dateHandler);
@@ -24,6 +30,7 @@ export class SyscallService {
     this.handlers.set('ls', this.lsHandler);
     this.handlers.set('uname', this.unameHandler);
     this.handlers.set('write', this.writeHandler);
+    this.handlers.set('pwd', this.pwdHandler);
   }
 
   // TODO: DI를 통해서 각 핸들러를 주입받아야 함
@@ -40,7 +47,7 @@ export class SyscallService {
    * @throws {Error} 명령어 실행 중 발생한 에러는 stderr에 포함되어 반환됩니다.
    */
   async handleCommand(syscallDto: SyscallDto): Promise<CommandResult> {
-    const { command, data } = syscallDto;
+    const { processId, command, data } = syscallDto;
 
     // 공백 기준 명령어 문자열 파싱
     const [commandName, ...args] = command.split(' ');
@@ -56,8 +63,9 @@ export class SyscallService {
     }
 
     try {
+      const context: CommandContext = { processId };
       // 핸들러에 작업 위임 (args, data 전달)
-      return await handler.execute(args, data);
+      return await handler.execute(args, data, context);
     } catch (err) {
       return {
         stdout: '',
