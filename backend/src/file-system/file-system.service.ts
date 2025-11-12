@@ -102,13 +102,13 @@ export class FileSystemService {
 
       // 루트가 아니면 이름 추가
       if (directory.parentId !== null) {
-        parts.unshift(directory.name); // FIXME: push 후 reverse로 수정?
+        parts.push(directory.name);
       }
 
       currentId = directory.parentId;
     }
 
     // 루트는 항상 '/'
-    return '/' + parts.join('/');
+    return '/' + parts.reverse().join('/');
   }
 }
