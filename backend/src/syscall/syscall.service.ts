@@ -10,6 +10,7 @@ import { HelpHandler } from './handlers/builtins/help.handler';
 import { LsHandler } from './handlers/file-system/ls.handler';
 import { UnameHandler } from './handlers/builtins/uname.handler';
 import { PwdHandler } from './handlers/file-system/pwd.handler';
+import { MkdirHandler } from './handlers/file-system/mkdir.handler';
 
 @Injectable()
 export class SyscallService {
@@ -21,6 +22,7 @@ export class SyscallService {
     private readonly lsHandler: LsHandler,
     private readonly unameHandler: UnameHandler,
     private readonly pwdHandler: PwdHandler,
+    private readonly mkdirHandler: MkdirHandler,
   ) {
     // 핸들러 등록
     this.handlers.set('date', this.dateHandler);
@@ -28,10 +30,8 @@ export class SyscallService {
     this.handlers.set('ls', this.lsHandler);
     this.handlers.set('uname', this.unameHandler);
     this.handlers.set('pwd', this.pwdHandler);
+    this.handlers.set('mkdir', this.mkdirHandler);
   }
-
-  // TODO: DI를 통해서 각 핸들러를 주입받아야 함
-  // TODO: 모듈이 초기화될 때 핸들러를 handlers Map에 등록해야 함
 
   /**
    * 사용자가 입력한 명령어를 처리합니다.
@@ -61,7 +61,7 @@ export class SyscallService {
 
     try {
       const context: CommandContext = { processId };
-      // 핸들러에 작업 위임 (args, data 전달)
+      // 핸들러에 작업 위임 (args, data, context 전달)
       return await handler.execute(args, data, context);
     } catch (err) {
       return {

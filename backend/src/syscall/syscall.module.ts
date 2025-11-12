@@ -8,6 +8,7 @@ import { FileSystemModule } from 'src/file-system/file-system.module';
 import { UnameHandler } from './handlers/builtins/uname.handler';
 import { PwdHandler } from './handlers/file-system/pwd.handler';
 import { ProcessesModule } from 'src/processes/processes.module';
+import { MkdirHandler } from './handlers/file-system/mkdir.handler';
 
 @Module({
   imports: [FileSystemModule, ProcessesModule],
@@ -19,6 +20,7 @@ import { ProcessesModule } from 'src/processes/processes.module';
     LsHandler,
     UnameHandler,
     PwdHandler,
+    MkdirHandler,
   ],
 })
 export class SyscallModule {}
