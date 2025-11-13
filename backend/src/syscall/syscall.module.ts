@@ -9,6 +9,7 @@ import { FileSystemModule } from 'src/file-system/file-system.module';
 import { UnameHandler } from './handlers/builtins/uname.handler';
 import { PwdHandler } from './handlers/file-system/pwd.handler';
 import { ProcessesModule } from 'src/processes/processes.module';
+import { MkdirHandler } from './handlers/file-system/mkdir.handler';
 import { CdHandler } from './handlers/file-system/cd.handler';
 
 @Module({
@@ -22,6 +23,7 @@ import { CdHandler } from './handlers/file-system/cd.handler';
     LsHandler,
     UnameHandler,
     PwdHandler,
+    MkdirHandler,
     CdHandler,
   ],
 })
