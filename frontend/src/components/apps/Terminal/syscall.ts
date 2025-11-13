@@ -11,6 +11,9 @@ interface SyscallResponse {
 }
 
 export const requestSyscall = async (payload: SyscallRequest) => {
-  const res = await api.post<SyscallResponse>("/syscall", payload);
+  const res = await api.post<SyscallResponse>("/syscall", {
+    processId: 1,
+    ...payload,
+  });
   return res.data;
 };
