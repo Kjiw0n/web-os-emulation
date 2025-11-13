@@ -2,10 +2,14 @@ import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileSystem } from './entities/file-system.entity';
 import { FileType } from './types';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class FileSystemService {
-  constructor(private readonly fileSystemRepository: FileSystemRepository) {}
+  constructor(
+    private readonly fileSystemRepository: FileSystemRepository,
+    private readonly s3Service: S3Service,
+  ) {}
 
   /**
    * 절대 경로 문자열을 기반으로 FileSystem 엔티티를 찾습니다.
@@ -62,6 +66,34 @@ export class FileSystemService {
   }
 
   /**
+   * write 명령어 로직
+   * 절대 경로를 기반으로 파일 생성
+   * @param path - 디렉토리 절대 경로 (예: "/home/usr")
+   * @param fileName - 파일 이름 (예: "hello.txt")
+   * @param content - 파일 내용
+   */
+  async writeFile(path: string, fileName: string, content: string) {
+    const parentDir = await this.findNodeByAbsolutePath(path);
+
+    if (parentDir.type !== FileType.DIRECTORY) {
+      throw new Error(`'${path}'는 디렉토리가 아닙니다.`);
+    }
+
+    // S3에 파일 업로드
+    const contentUrl = await this.s3Service.uploadFile(content, fileName);
+
+    // 파일 엔티티 생성
+    const newFile = new FileSystem();
+    newFile.name = fileName;
+    newFile.type = FileType.FILE;
+    newFile.parentId = parentDir.id;
+    newFile.contentUrl = contentUrl;
+    newFile.size = content.length.toString();
+    newFile.fileExtension = fileName.split('.').pop() || null;
+    newFile.permissions = 'rw-';
+
+    // 파일 엔티티 저장
+    return await this.fileSystemRepository.save(newFile);
    * 디렉토리 ID로부터 루트까지의 절대 경로를 구성
    * @param directoryId - 경로를 구할 디렉토리 ID
    * @returns - 절대 경로 문자열 (예: "/root/documents")
