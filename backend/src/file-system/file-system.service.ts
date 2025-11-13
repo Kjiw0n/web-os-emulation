@@ -1,33 +1,11 @@
 import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateFileSystemDto } from './dto/create-file-system.dto';
-import { UpdateFileSystemDto } from './dto/update-file-system.dto';
 import { FileSystem } from './entities/file-system.entity';
 import { FileType } from './types';
 
 @Injectable()
 export class FileSystemService {
   constructor(private readonly fileSystemRepository: FileSystemRepository) {}
-
-  create(createFileSystemDto: CreateFileSystemDto) {
-    return 'This action adds a new fileSystem';
-  }
-
-  findAll() {
-    return `This action returns all fileSystem`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} fileSystem`;
-  }
-
-  update(id: number, updateFileSystemDto: UpdateFileSystemDto) {
-    return `This action updates a #${id} fileSystem`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} fileSystem`;
-  }
 
   /**
    * 절대 경로 문자열을 기반으로 FileSystem 엔티티를 찾습니다.
@@ -110,5 +88,63 @@ export class FileSystemService {
 
     // 루트는 항상 '/'
     return '/' + parts.reverse().join('/');
+  }
+
+  /**
+   * 현재 디렉토리 기준으로 상대 경로를 해석하여 최종 디렉토리 ID를 반환.
+   * @param currentDirectoryId - 현재 작업 디렉토리 ID
+   * @param relativePath - 상대 경로 (예: "documents", "..", "documents/notes")
+   * @returns - 최종 디렉토리 ID
+   * @throws {Error} - 경로가 존재하지 않거나 디렉토리가 아닌 경우
+   */
+  async resolveRelativePath(
+    currentDirectoryId: number,
+    relativePath: string,
+  ): Promise<number> {
+    // 빈 경로는 현재 디렉토리
+    if (!relativePath || relativePath === '.') {
+      return currentDirectoryId;
+    }
+
+    // 경로를 '/' 기준으로 분리. 공백은 fileter로 처리
+    const segments = relativePath.split('/').filter((seg) => seg);
+
+    let currentId = currentDirectoryId;
+
+    for (const segment of segments) {
+      if (segment === '.') {
+        // 현재 디렉토리 - 아무것도 안 함
+        continue;
+      } else if (segment === '..') {
+        // 부모 디렉토리로 이동
+        const current = await this.fileSystemRepository.findById(currentId);
+        if (!current) {
+          throw new Error('디렉토리를 찾을 수 없습니다.');
+        }
+        if (current.parentId === null) {
+          throw new Error('루트 디렉토리의 상위로 이동할 수 없습니다.');
+        }
+        currentId = current.parentId;
+      } else {
+        // 자식 디렉토리 찾기
+        const child = await this.fileSystemRepository.findChildByName(
+          currentId,
+          segment,
+        );
+
+        // TODO: DDD에 맞게 파일의 검증 로직은 fs entity에서 처리
+        if (!child) {
+          throw new NotFoundException(`'${segment}'를 찾을 수 없습니다.`);
+        }
+
+        if (child.type !== FileType.DIRECTORY) {
+          throw new Error(`'${segment}'는 디렉토리가 아닙니다.`);
+        }
+
+        currentId = child.id;
+      }
+    }
+
+    return currentId;
   }
 }

@@ -7,10 +7,12 @@ import {
 } from './handlers/command.interface';
 import { DateHandler } from './handlers/builtins/date.handler';
 import { HelpHandler } from './handlers/builtins/help.handler';
+import { ClearHandler } from './handlers/builtins/clear.handler';
 import { LsHandler } from './handlers/file-system/ls.handler';
 import { UnameHandler } from './handlers/builtins/uname.handler';
 import { PwdHandler } from './handlers/file-system/pwd.handler';
 import { MkdirHandler } from './handlers/file-system/mkdir.handler';
+import { CdHandler } from './handlers/file-system/cd.handler';
 
 @Injectable()
 export class SyscallService {
@@ -19,18 +21,22 @@ export class SyscallService {
   constructor(
     private readonly dateHandler: DateHandler,
     private readonly helpHandler: HelpHandler,
+    private readonly clearHandler: ClearHandler,
     private readonly lsHandler: LsHandler,
     private readonly unameHandler: UnameHandler,
     private readonly pwdHandler: PwdHandler,
     private readonly mkdirHandler: MkdirHandler,
+    private readonly cdHandler: CdHandler,
   ) {
     // 핸들러 등록
     this.handlers.set('date', this.dateHandler);
     this.handlers.set('help', this.helpHandler);
+    this.handlers.set('clear', this.clearHandler);
     this.handlers.set('ls', this.lsHandler);
     this.handlers.set('uname', this.unameHandler);
     this.handlers.set('pwd', this.pwdHandler);
     this.handlers.set('mkdir', this.mkdirHandler);
+    this.handlers.set('cd', this.cdHandler);
   }
 
   /**
