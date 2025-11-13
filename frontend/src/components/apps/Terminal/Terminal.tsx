@@ -12,6 +12,7 @@ export function Terminal({ isDarkMode }: TerminalProps) {
     "",
   ]);
   const [input, setInput] = useState("");
+  const [currentPath, setCurrentPath] = useState("/");
   const outputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,6 +30,9 @@ export function Terminal({ isDarkMode }: TerminalProps) {
 
     try {
       const res = await requestSyscall({ command: trimmed });
+      if (res.cwd) {
+        setCurrentPath(res.cwd);
+      }
       const stdout = res.stdout.trim();
       const stderr = res.stderr?.trim();
 
@@ -87,6 +91,9 @@ export function Terminal({ isDarkMode }: TerminalProps) {
 
       {/* 입력창 */}
       <div className="flex items-center gap-2">
+        <span className={isDarkMode ? "text-cyan-400" : "text-purple-600"}>
+          {currentPath}
+        </span>
         <span>$</span>
         <input
           type="text"

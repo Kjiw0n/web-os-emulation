@@ -8,6 +8,7 @@ interface SyscallRequest {
 interface SyscallResponse {
   stdout: string;
   stderr?: string;
+  cwd?: string;
 }
 
 export const requestSyscall = async (payload: SyscallRequest) => {
