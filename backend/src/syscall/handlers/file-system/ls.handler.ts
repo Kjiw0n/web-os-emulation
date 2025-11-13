@@ -64,12 +64,12 @@ export class LsHandler implements ICommandHandler {
       if (err instanceof Error) {
         return {
           stdout: '',
-          stderr: `mkdir: 오류 - ${err.message}`,
+          stderr: `mkdir: error: ${err.message}`,
         };
       }
       return {
         stdout: '',
-        stderr: 'mkdir: 알 수 없는 오류가 발생했습니다.',
+        stderr: 'mkdir: unexpected error occured',
       };
     }
   }
