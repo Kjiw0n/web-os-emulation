@@ -6,7 +6,6 @@ import {
 } from '../command.interface';
 import { ProcessesRepository } from 'src/processes/processes.repository';
 import { FileSystemService } from 'src/file-system/file-system.service';
-import { FileType } from 'src/file-system/types';
 
 @Injectable()
 export class CdHandler implements ICommandHandler {
@@ -47,7 +46,7 @@ export class CdHandler implements ICommandHandler {
           await this.fileSystemService.findNodeByAbsolutePath(targetPath);
 
         // 디렉토리 검증
-        if (targetNode.type !== FileType.DIRECTORY) {
+        if (!targetNode.isDirectory()) {
           return {
             stdout: '',
             stderr: `cd: '${targetPath}': Not a directory`,
