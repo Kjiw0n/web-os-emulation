@@ -97,7 +97,6 @@ export class FileSystemService {
 
     // 파일 엔티티 저장
     return await this.fileSystemRepository.save(newFile);
-
   }
 
   /**

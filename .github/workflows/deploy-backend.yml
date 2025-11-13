@@ -78,10 +78,10 @@ jobs:
             cd /root
 
             # 4. 🚨 docker-compose가 NESTJS_IMAGE_URI 변수를 읽어 'app' 서비스의 "새 이미지"를 PULL
-            docker-compose -f docker-compose.prod.yml pull app
+            docker compose -f docker-compose.prod.yml pull app
 
             # 5. 🚨 "새 이미지"로 'app' 서비스만 재시작 (mysql은 건드리지 않음)
-            docker-compose -f docker-compose.prod.yml up -d --no-deps app
+            docker compose -f docker-compose.prod.yml up -d --no-deps app
 
-            # 6. 불필요한 <none> 이미지 삭제 (디스크 공간 확보)
-            docker image prune -f
+            # 6. 사용 중이지 않은 모든 이미지 삭제 (디스크 공간 확보)
+            docker image prune -a -f
