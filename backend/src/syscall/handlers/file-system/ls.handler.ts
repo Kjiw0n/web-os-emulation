@@ -28,59 +28,49 @@ export class LsHandler implements ICommandHandler {
       };
     }
 
-    // 절대 경로 처리
-    if (path.startsWith('/')) {
-      try {
-        const childrenNodes = await this.fileSystemService.listDirectory(path);
+    try {
+      // 경로 결정
+      let absolutePath: string;
 
-        const output = childrenNodes.map((node) => node.name).join(' ');
-
-        return { stdout: output, stderr: '' };
-      } catch (err) {
-        if (err instanceof Error) return { stdout: '', stderr: err.message };
-        return { stdout: '', stderr: '알 수 없는 오류가 발생했습니다.' };
-      }
-    } else {
-      // 상대 경로 처리
-      const process = await this.processesRepo.findOne(context?.processId);
-      if (!process) {
-        return {
-          stdout: '',
-          stderr: 'mkdir: process not found',
-        };
-      }
-
-      try {
-        const currentDirectoryId = process?.currentDirectoryId;
+      if (path.startsWith('/')) {
+        // 절대 경로
+        absolutePath = path;
+      } else {
+        // 상대 경로
+        const process = await this.processesRepo.findOne(context?.processId);
+        if (!process) {
+          return {
+            stdout: '',
+            stderr: 'mkdir: process not found',
+          };
+        }
 
         const relativePathId = await this.fileSystemService.resolveRelativePath(
-          currentDirectoryId,
+          process.currentDirectoryId,
           path,
         );
 
-        const absolutePath =
-          await this.fileSystemService.buildPath(relativePathId);
+        absolutePath = await this.fileSystemService.buildPath(relativePathId);
+      }
 
-        const childrenNodes =
-          await this.fileSystemService.listDirectory(absolutePath);
+      // 디렉토리 내용 조회
+      const childrenNodes =
+        await this.fileSystemService.listDirectory(absolutePath);
 
-        const output = childrenNodes.map((node) => node.name).join(' ');
+      const output = childrenNodes.map((node) => node.name).join(' ');
 
-        return { stdout: output, stderr: '' };
-      } catch (err) {
-        if (err instanceof Error) {
-          return {
-            stdout: '',
-            stderr: `mkdir: 오류 - ${err.message}`,
-          };
-        }
+      return { stdout: output, stderr: '' };
+    } catch (err) {
+      if (err instanceof Error) {
         return {
           stdout: '',
-          stderr: 'mkdir: 알 수 없는 오류가 발생했습니다.',
+          stderr: `mkdir: 오류 - ${err.message}`,
         };
       }
+      return {
+        stdout: '',
+        stderr: 'mkdir: 알 수 없는 오류가 발생했습니다.',
+      };
     }
-
-    return { stdout: '', stderr: '현재는 절대 경로만 지원합니다.' };
   }
 }
