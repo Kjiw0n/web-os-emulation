@@ -31,7 +31,7 @@ export class WindowsService {
       // 2. Process 생성
       const programName = dto.program ?? 'shell';
 
-      const rootDir = await txFileSystemRepo.findByDirName('root');
+      const rootDir = await txFileSystemRepo.findByDirName('/');
       if (!rootDir) {
         throw new NotFoundException(
           'Root directory not found. Please run seed.',
