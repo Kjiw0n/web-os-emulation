@@ -38,6 +38,14 @@ export class RmHandler implements ICommandHandler {
       };
     }
 
+    const process = await this.processesRepo.findOne(context?.processId);
+    if (!process) {
+      return {
+        stdout: '',
+        stderr: 'rm: process not found',
+      };
+    }
+
     try {
       let fileSystemEntity: FileSystem | null = null;
 
@@ -47,13 +55,6 @@ export class RmHandler implements ICommandHandler {
           await this.fileSystemService.findNodeByAbsolutePath(path);
       } else if (path.includes('/')) {
         // 상대 경로 처리
-        const process = await this.processesRepo.findOne(context?.processId);
-        if (!process) {
-          return {
-            stdout: '',
-            stderr: 'rm: process not found',
-          };
-        }
 
         const relativePathId = await this.fileSystemService.resolveRelativePath(
           process.currentDirectoryId,
@@ -67,13 +68,6 @@ export class RmHandler implements ICommandHandler {
           await this.fileSystemService.findNodeByAbsolutePath(absolutePath);
       } else {
         // 단순 파일명 입력 처리
-        const process = await this.processesRepo.findOne(context?.processId);
-        if (!process) {
-          return {
-            stdout: '',
-            stderr: 'rm: process not found',
-          };
-        }
 
         fileSystemEntity = await this.fileSyetemRepo.findChildByName(
           process.currentDirectoryId,
