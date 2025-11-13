@@ -64,4 +64,20 @@ export class FileSystem {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  // ======================================
+  // 도메인 불변식(invariants) 및 상태 검증 메서드
+  // ======================================
+
+  isDirectory(): boolean {
+    return this.type === FileType.DIRECTORY;
+  }
+
+  isRoot(): this is FileSystem & { parentId: null } {
+    return this.parentId === null;
+  }
+
+  hasParent(): this is FileSystem & { parentId: number } {
+    return this.parentId !== null;
+  }
 }
