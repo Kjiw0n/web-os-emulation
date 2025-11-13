@@ -16,7 +16,6 @@ import { CdHandler } from './handlers/file-system/cd.handler';
 @Module({
   imports: [FileSystemModule, ProcessesModule],
   controllers: [SyscallController],
-  providers: [SyscallService, DateHandler, HelpHandler, LsHandler, UnameHandler, WriteHandler],
   providers: [
     SyscallService,
     DateHandler,
@@ -27,6 +26,7 @@ import { CdHandler } from './handlers/file-system/cd.handler';
     PwdHandler,
     MkdirHandler,
     CdHandler,
+    WriteHandler,
   ],
 })
 export class SyscallModule {}
