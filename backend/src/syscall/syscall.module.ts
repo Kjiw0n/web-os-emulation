@@ -12,6 +12,7 @@ import { PwdHandler } from './handlers/file-system/pwd.handler';
 import { ProcessesModule } from 'src/processes/processes.module';
 import { MkdirHandler } from './handlers/file-system/mkdir.handler';
 import { CdHandler } from './handlers/file-system/cd.handler';
+import { CatHandler } from './handlers/file-system/cat.handler';
 import { RmHandler } from './handlers/file-system/rm.handler';
 
 @Module({
@@ -28,6 +29,7 @@ import { RmHandler } from './handlers/file-system/rm.handler';
     MkdirHandler,
     CdHandler,
     WriteHandler,
+    CatHandler,
     RmHandler,
   ],
 })

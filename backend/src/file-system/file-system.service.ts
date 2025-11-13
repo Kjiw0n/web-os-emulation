@@ -3,12 +3,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileSystem } from './entities/file-system.entity';
 import { FileType } from './types';
 import { S3Service } from 'src/s3/s3.service';
+import { ProcessesRepository } from 'src/processes/processes.repository';
 
 @Injectable()
 export class FileSystemService {
   constructor(
     private readonly fileSystemRepository: FileSystemRepository,
     private readonly s3Service: S3Service,
+    private readonly processesRepo: ProcessesRepository,
+
   ) {}
 
   /**
@@ -94,6 +97,48 @@ export class FileSystemService {
 
     // 파일 엔티티 저장
     return await this.fileSystemRepository.save(newFile);
+  }
+
+  /**
+   * 파일 내용을 가져옵니다.
+   * @param processId - 현재 프로세스 ID
+   * @param targetPath - 파일 절대 또는 상대 경로
+   * @returns 파일 내용 문자열
+   * @throws {Error} - 파일을 찾지 못했거나 디렉토리인 경우
+   */
+  async readFile(processId: number, targetPath: string): Promise<string> {
+    let fileNode: FileSystem;
+
+    if (targetPath.startsWith('/')) {
+      // 절대 경로
+      fileNode = await this.findNodeByAbsolutePath(targetPath);
+    } else {
+      // 상대 경로
+      const proc = await this.processesRepo.findOne(processId);
+      if (!proc) throw new Error(`프로세스 ID ${processId}를 찾을 수 없습니다.`);
+
+      const segments = targetPath.split('/').filter(Boolean);
+      const fileName = segments.pop()!;
+      const relativeDir = segments.join('/');
+      const targetDirId = await this.resolveRelativePath(
+        proc.currentDirectoryId,
+        relativeDir || '.'
+      );
+      const directoryPath = await this.buildPath(targetDirId);
+      fileNode = await this.findNodeByAbsolutePath(`${directoryPath}/${fileName}`);
+    }
+
+    if (!fileNode) throw new Error(`'${targetPath}'를 찾을 수 없습니다.`);
+    if (fileNode.type !== FileType.FILE) throw new Error(`'${fileNode.name}'는 파일이 아닙니다.`);
+
+    if (!fileNode.contentUrl) throw new Error(`'${fileNode.name}'에 내용이 없습니다.`);
+
+    // S3에서 다운로드
+    // contentUrl은 "https://{bucket}.kr.object.ncloudstorage.com/{key}" 형식이므로 key만 추출
+    const url = new URL(fileNode.contentUrl);
+    const key = url.pathname.slice(1); // 앞의 '/' 제거
+
+    return this.s3Service.downloadFile(key);
   }
 
   /**

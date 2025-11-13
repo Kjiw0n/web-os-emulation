@@ -14,6 +14,7 @@ import { WriteHandler } from './handlers/file-system/write.handler';
 import { PwdHandler } from './handlers/file-system/pwd.handler';
 import { MkdirHandler } from './handlers/file-system/mkdir.handler';
 import { CdHandler } from './handlers/file-system/cd.handler';
+import { CatHandler } from './handlers/file-system/cat.handler';
 import { RmHandler } from './handlers/file-system/rm.handler';
 
 @Injectable()
@@ -30,6 +31,7 @@ export class SyscallService {
     private readonly pwdHandler: PwdHandler,
     private readonly mkdirHandler: MkdirHandler,
     private readonly cdHandler: CdHandler,
+    private readonly catHandler: CatHandler
     private readonly rmHandler: RmHandler,
   ) {
     // 핸들러 등록
@@ -42,6 +44,7 @@ export class SyscallService {
     this.handlers.set('pwd', this.pwdHandler);
     this.handlers.set('mkdir', this.mkdirHandler);
     this.handlers.set('cd', this.cdHandler);
+    this.handlers.set('cat', this.catHandler);
     this.handlers.set('rm', this.rmHandler);
   }
 
