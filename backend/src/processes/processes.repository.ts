@@ -41,4 +41,8 @@ export class ProcessesRepository {
       { currentDirectoryId: newDirectoryId }, // set
     );
   }
+
+  async deleteById(id: number): Promise<void> {
+    await this.repo.delete({ id });
+  }
 }
