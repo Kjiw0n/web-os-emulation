@@ -24,7 +24,7 @@ export class LsHandler implements ICommandHandler {
     if (!context?.processId) {
       return {
         stdout: '',
-        stderr: 'mkdir: process context required',
+        stderr: 'ls: process context required',
       };
     }
 
@@ -41,7 +41,7 @@ export class LsHandler implements ICommandHandler {
         if (!process) {
           return {
             stdout: '',
-            stderr: 'mkdir: process not found',
+            stderr: 'ls: process not found',
           };
         }
 
@@ -64,12 +64,12 @@ export class LsHandler implements ICommandHandler {
       if (err instanceof Error) {
         return {
           stdout: '',
-          stderr: `mkdir: error: ${err.message}`,
+          stderr: `ls: error: ${err.message}`,
         };
       }
       return {
         stdout: '',
-        stderr: 'mkdir: unexpected error occured',
+        stderr: 'ls: unexpected error occured',
       };
     }
   }
