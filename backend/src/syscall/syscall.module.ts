@@ -12,6 +12,7 @@ import { PwdHandler } from './handlers/file-system/pwd.handler';
 import { ProcessesModule } from 'src/processes/processes.module';
 import { MkdirHandler } from './handlers/file-system/mkdir.handler';
 import { CdHandler } from './handlers/file-system/cd.handler';
+import { CatHandler } from './handlers/file-system/cat.handler';
 
 @Module({
   imports: [FileSystemModule, ProcessesModule],
@@ -27,6 +28,7 @@ import { CdHandler } from './handlers/file-system/cd.handler';
     MkdirHandler,
     CdHandler,
     WriteHandler,
+    CatHandler,
   ],
 })
 export class SyscallModule {}
