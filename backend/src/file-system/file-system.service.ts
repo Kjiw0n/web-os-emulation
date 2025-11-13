@@ -94,6 +94,10 @@ export class FileSystemService {
 
     // 파일 엔티티 저장
     return await this.fileSystemRepository.save(newFile);
+
+  }
+
+  /**
    * 디렉토리 ID로부터 루트까지의 절대 경로를 구성
    * @param directoryId - 경로를 구할 디렉토리 ID
    * @returns - 절대 경로 문자열 (예: "/root/documents")
