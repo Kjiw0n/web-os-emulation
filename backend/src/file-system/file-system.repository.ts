@@ -66,4 +66,14 @@ export class FileSystemRepository {
   async save(fileSystem: FileSystem): Promise<FileSystem> {
     return this.repo.save(fileSystem);
   }
+
+  /**
+   * 주어진 ID로 파일 시스템 노드를 삭제합니다.
+   *
+   * @param id - 삭제할 파일 시스템 노드의 ID
+   * @returns {Promise<void>}
+   */
+  async deleteById(id: number): Promise<void> {
+    await this.repo.delete({ id });
+  }
 }
