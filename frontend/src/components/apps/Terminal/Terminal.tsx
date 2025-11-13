@@ -65,6 +65,17 @@ export function Terminal({ isDarkMode }: TerminalProps) {
     }
   };
 
+  const shortenPath = (path: string): string => {
+    const segments = path.split("/").filter(Boolean);
+
+    // depth 3 이하이면 그냥 그대로
+    if (segments.length <= 3) return path;
+
+    // depth > 3 → .../last3
+    const last3 = segments.slice(-3).join("/");
+    return ".../" + last3;
+  };
+
   return (
     <div
       className={`flex h-96 flex-col p-4 font-mono ${
@@ -92,7 +103,7 @@ export function Terminal({ isDarkMode }: TerminalProps) {
       {/* 입력창 */}
       <div className="flex items-center gap-2">
         <span className={isDarkMode ? "text-cyan-400" : "text-purple-600"}>
-          {currentPath}
+          {shortenPath(currentPath)}
         </span>
         <span>$</span>
         <input
