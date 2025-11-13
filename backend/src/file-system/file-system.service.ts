@@ -114,7 +114,7 @@ export class FileSystemService {
       }
 
       // 루트가 아니면 이름 추가
-      if (directory.parentId !== null) {
+      if (!directory.isRoot()) {
         parts.push(directory.name);
       }
 
@@ -156,7 +156,7 @@ export class FileSystemService {
         if (!current) {
           throw new Error('디렉토리를 찾을 수 없습니다.');
         }
-        if (current.parentId === null) {
+        if (!current.hasParent()) {
           throw new Error('루트 디렉토리의 상위로 이동할 수 없습니다.');
         }
         currentId = current.parentId;
@@ -167,12 +167,11 @@ export class FileSystemService {
           segment,
         );
 
-        // TODO: DDD에 맞게 파일의 검증 로직은 fs entity에서 처리
         if (!child) {
           throw new NotFoundException(`'${segment}'를 찾을 수 없습니다.`);
         }
 
-        if (child.type !== FileType.DIRECTORY) {
+        if (!child.isDirectory()) {
           throw new Error(`'${segment}'는 디렉토리가 아닙니다.`);
         }
 

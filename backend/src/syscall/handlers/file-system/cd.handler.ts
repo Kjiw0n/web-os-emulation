@@ -6,7 +6,6 @@ import {
 } from '../command.interface';
 import { ProcessesRepository } from 'src/processes/processes.repository';
 import { FileSystemService } from 'src/file-system/file-system.service';
-import { FileType } from 'src/file-system/types';
 
 @Injectable()
 export class CdHandler implements ICommandHandler {
@@ -38,6 +37,14 @@ export class CdHandler implements ICommandHandler {
     const targetPath = args[0];
 
     try {
+      const process = await this.processesRepo.findOne(context.processId);
+      if (!process) {
+        return {
+          stdout: '',
+          stderr: 'cd: process not found',
+        };
+      }
+
       let newDirId: number;
 
       // 절대경로 처리
@@ -47,7 +54,7 @@ export class CdHandler implements ICommandHandler {
           await this.fileSystemService.findNodeByAbsolutePath(targetPath);
 
         // 디렉토리 검증
-        if (targetNode.type !== FileType.DIRECTORY) {
+        if (!targetNode.isDirectory()) {
           return {
             stdout: '',
             stderr: `cd: '${targetPath}': Not a directory`,
@@ -57,25 +64,17 @@ export class CdHandler implements ICommandHandler {
         newDirId = targetNode.id;
       } else {
         // 상대 경로 처리
-        const process = await this.processesRepo.findOne(context.processId);
-        if (!process) {
-          return {
-            stdout: '',
-            stderr: 'cd: process not found',
-          };
-        }
-
         newDirId = await this.fileSystemService.resolveRelativePath(
           process.currentDirectoryId,
           targetPath,
         );
       }
 
-      // 프로세스의 현재 디렉토리 업데이트
-      await this.processesRepo.updateCurrentDirectory(
-        context.processId,
-        newDirId,
-      );
+      // 도메인 로직을 엔티티에 위임
+      process.updateCurrentDir(newDirId);
+
+      // 변경사항 저장
+      await this.processesRepo.save(process);
 
       return {
         stdout: '', // cd는 성공 시 출력 없음
