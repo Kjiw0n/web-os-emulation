@@ -1,37 +1,69 @@
 import { Injectable } from '@nestjs/common';
-import { CommandResult, ICommandHandler } from '../command.interface';
+import { CommandContext, CommandResult, ICommandHandler } from '../command.interface';
 import { FileSystemService } from 'src/file-system/file-system.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Process } from 'src/processes/entities/process.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class WriteHandler implements ICommandHandler {
-  constructor(private readonly fileSystemService: FileSystemService) {}
+  constructor(
+    private readonly fileSystemService: FileSystemService,
+    @InjectRepository(Process)
+    private readonly processRepository: Repository<Process>,
+  ) {}
 
-  async execute(args: string[]): Promise<CommandResult> {
-    // 명령어 형식: write <경로> data <내용>
-    // 예: write /home/usr/hello.txt data 안녕하세요! S3에 저장됩니다.
+  async execute(args: string[], _data:string, context: CommandContext): Promise<CommandResult> {
     const dataIndex = args.indexOf('data');
 
     if (dataIndex === -1) {
-      return { stdout: '', stderr: "형식이 올바르지 않습니다. 예: write /path/to/file.txt data 내용" };
+      return { 
+        stdout: '', 
+        stderr: "형식이 올바르지 않습니다. 예: write <경로> data <내용>" };
     }
 
-    const fullPath = args[dataIndex - 1];
-    const content = args.slice(dataIndex + 1).join(' '); // 'data' 이후의 모든 문자열을 내용으로
+    const targetPath = args[dataIndex - 1];
+    const content = args.slice(dataIndex + 1).join(' ');
+    const processId = context.processId;
 
-    if (!fullPath || !fullPath.startsWith('/')) {
-      return { stdout: '', stderr: '절대 경로를 올바르게 지정해주세요.' };
+    if (!processId) {
+      return { stdout: '', stderr: 'processId가 누락되었습니다.' };
     }
 
-    try {
-      const segments = fullPath.split('/').filter(Boolean);
-      const fileName = segments.pop()!;
-      const dirPath = '/' + segments.join('/');
+    // 현재 프로세스의 작업 디렉토리 조회
+    const proc = await this.processRepository.findOneBy({ id: processId });
+    if (!proc) {
+      return { stdout: '', stderr: `프로세스 ID ${processId}를 찾을 수 없습니다.` };
+    }
 
-      const fileNode = await this.fileSystemService.writeFile(dirPath, fileName, content);
+    try{
+      let directoryPath: string;
+      let fileName: string;
 
-      return { stdout: `파일 '${fileNode.name}'이 성공적으로 생성되었습니다.`, stderr: '' };
+      if (targetPath.startsWith('/')) {
+        // 절대 경로
+        const segments = targetPath.split('/').filter(Boolean);
+        fileName = segments.pop()!;
+        directoryPath = '/' + segments.join('/');
+    }else {
+        // 상대 경로
+        const segments = targetPath.split('/').filter(Boolean);
+        fileName = segments.pop()!;
+        const relativeDir = segments.join('/');
+        const targetDirId = await this.fileSystemService.resolveRelativePath(
+          proc.currentDirectoryId,
+          relativeDir || '.',
+        );
+        directoryPath = await this.fileSystemService.buildPath(targetDirId);
+      }
+
+      const fileNode = await this.fileSystemService.writeFile(directoryPath, fileName, content);
+
+      return { stdout: `파일 '${fileNode.name}'에 데이터를 성공적으로 작성했습니다.`, stderr: '' };
     } catch (err) {
-      if (err instanceof Error) return { stdout: '', stderr: err.message };
+      if (err instanceof Error) {
+        return { stdout: '', stderr: err.message };
+      }
       return { stdout: '', stderr: '알 수 없는 오류가 발생했습니다.' };
     }
   }
