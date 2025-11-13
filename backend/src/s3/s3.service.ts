@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { ConfigService } from "@nestjs/config";
-import { randomUUID } from "crypto";
-import { IS3Service } from "./s3.interface";
+import { Injectable } from '@nestjs/common';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
+import { IS3Service } from './s3.interface';
 
 @Injectable()
 export class S3Service implements IS3Service {

@@ -2,6 +2,7 @@
 export interface CommandResult {
   stdout: string; // 터미널 표준 출력
   stderr?: string; // 터미널 표준 에러
+  cwd?: string;
 }
 
 export interface CommandContext {

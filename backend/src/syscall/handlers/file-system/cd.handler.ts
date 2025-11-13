@@ -80,6 +80,7 @@ export class CdHandler implements ICommandHandler {
       return {
         stdout: '', // cd는 성공 시 출력 없음
         stderr: '',
+        cwd: await this.fileSystemService.buildPath(newDirId),
       };
     } catch (error) {
       return {
