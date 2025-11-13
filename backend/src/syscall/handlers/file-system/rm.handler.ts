@@ -50,12 +50,9 @@ export class RmHandler implements ICommandHandler {
       let fileSystemEntity: FileSystem | null = null;
 
       if (path.startsWith('/')) {
-        // 절대 경로 처리
         fileSystemEntity =
           await this.fileSystemService.findNodeByAbsolutePath(path);
       } else if (path.includes('/')) {
-        // 상대 경로 처리
-
         const relativePathId = await this.fileSystemService.resolveRelativePath(
           process.currentDirectoryId,
           path,
@@ -67,8 +64,6 @@ export class RmHandler implements ICommandHandler {
         fileSystemEntity =
           await this.fileSystemService.findNodeByAbsolutePath(absolutePath);
       } else {
-        // 단순 파일명 입력 처리
-
         fileSystemEntity = await this.fileSyetemRepo.findChildByName(
           process.currentDirectoryId,
           path,
