@@ -31,14 +31,4 @@ export class ProcessesRepository {
   async findRunningProcesses(): Promise<Process[]> {
     return this.findByStatus(ProcessStatus.RUNNING);
   }
-
-  async updateCurrentDirectory(
-    processId: number,
-    newDirectoryId: number,
-  ): Promise<void> {
-    await this.repo.update(
-      { id: processId }, // where
-      { currentDirectoryId: newDirectoryId }, // set
-    );
-  }
 }
