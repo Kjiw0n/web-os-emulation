@@ -6,4 +6,11 @@ export interface IS3Service {
    * @returns 업로드된 파일의 URL
    */
   uploadFile(content: string, fileName: string): Promise<string>;
+
+  /**
+   * 파일을 다운로드
+   * @param fileName - 다운로드할 파일 이름
+   * @returns 파일 내용
+   */
+  downloadFile(fileName: string): Promise<string>;
 }
