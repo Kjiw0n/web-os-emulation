@@ -65,4 +65,27 @@ export class Process {
 
     return process;
   }
+
+  // ===== 도메인 로직 =====
+
+  /**
+   * 현재 디렉토리 변경
+   * @param newDirId - 새 디렉토리 ID
+   * @throws {Error} 프로세스가 종료된 경우
+   */
+  updateCurrentDir(newDirId: number): void {
+    // 도메인 규칙: 종료된 프로세스는 디렉토리 변경 불가
+    if (this.isStoped()) {
+      throw new Error('정지된 프로세스는 디렉토리를 변경할 수 없습니다.');
+    }
+
+    this.currentDirectoryId = newDirId;
+  }
+
+  /**
+   * 프로세스 종료 여부
+   */
+  isStoped(): boolean {
+    return this.status === ProcessStatus.STOPPED;
+  }
 }
