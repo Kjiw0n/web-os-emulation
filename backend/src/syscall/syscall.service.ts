@@ -31,7 +31,7 @@ export class SyscallService {
     private readonly pwdHandler: PwdHandler,
     private readonly mkdirHandler: MkdirHandler,
     private readonly cdHandler: CdHandler,
-    private readonly catHandler: CatHandler
+    private readonly catHandler: CatHandler,
     private readonly rmHandler: RmHandler,
   ) {
     // 핸들러 등록
