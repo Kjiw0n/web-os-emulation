@@ -19,7 +19,7 @@ async function seed() {
 
     // 루트 디렉토리 생성
     const root = fileSystemRepo.create({
-      name: 'root',
+      name: '/',
       type: FileType.DIRECTORY,
       parentId: null,
       size: '0',
