@@ -4,6 +4,8 @@
 >
 > 사용자는 부팅 → 바탕화면 진입 → 터미널 실행 → 파일 탐색기 열기 등의 일련의 과정을 통해,  
 > 웹 브라우저 상에서 OS의 작동 원리를 경험할 수 있습니다.
+>
+> 팀 욧시욧시의 배포 링크 👉 https://web01os.duckdns.org/
 
 ### 팀원 소개
 
@@ -44,11 +46,25 @@ Web01 팀이 지향하는 문화에 대한 내용을 담았습니다. 개인이 
 
 ---
 
+### 현재 지원 중인 터미널 명령어
+
+| 명령어 | 설명 |
+| --- | --- |
+| **cd <경로>** | 현재 작업 디렉토리를 변경합니다. (절대/상대 경로 모두 지원) |
+| **pwd** | 현재 작업 중인 디렉토리의 절대 경로를 출력합니다. |
+| **ls [경로]** | 디렉토리 내의 파일 및 폴더 목록을 조회합니다. (기본: 현재 디렉토리) |
+| **cat <파일명>** | 텍스트 파일의 내용을 출력합니다. |
+| **mkdir <디렉토리명>** | 새로운 디렉토리를 생성합니다. |
+| **rm <파일명>** | 파일을 삭제합니다. (디렉토리는 삭제 불가) |
+| **write <파일명> <내용>** | 지정한 파일명을 가진 텍스트 파일을 생성하거나 덮어씁니다. |
+
+---
+
 ### ERD
 
-<img width="1000" height="466" alt="스크린샷 2025-11-11 15 47 13" src="https://github.com/user-attachments/assets/379cd2fb-f586-41c3-8ee9-c8303d8c3420" />
+<img width="1584" height="1016" alt="image" src="https://github.com/user-attachments/assets/53029732-0ea5-4821-a8cc-05e46e17943b" />
 
-> erd에 대한 자세한 설명은 👉 [백엔드 시스템 설계 wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EB%B0%B1%EC%97%94%EB%93%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%A4%EA%B3%84)
+> erd에 대한 자세한 내용은 👉 [백엔드 시스템 설계 wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EB%B0%B1%EC%97%94%EB%93%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%A4%EA%B3%84)
 ---
 
 ### Stacks
