@@ -1,11 +1,17 @@
 import Icn from "@/assets/Icons";
 import { Terminal } from "@/components/apps/Terminal/Terminal";
-import { Window } from "@/components/Window";
+import { openWindow } from "@/components/Window/windowAPI";
+import { Window } from "@/components/Window/Window";
 import { useState } from "react";
 
 interface WindowState {
-  id: string;
+  id: number;
   title: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  processId: number;
   isMinimized: boolean;
 }
 
@@ -13,12 +19,33 @@ const DesktopPage = () => {
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  const openTerminal = () => {
-    if (windows.find((w) => w.id === "terminal")) return;
-    setWindows([
-      ...windows,
-      { id: "terminal", title: "Terminal", isMinimized: false },
-    ]);
+  const openTerminal = async () => {
+    try {
+      const window = await openWindow({
+        title: "Terminal",
+        x: 200,
+        y: 100,
+        width: 700,
+        height: 500,
+        program: "terminal",
+      });
+
+      setWindows((prev) => [
+        ...prev,
+        {
+          id: window.windowId,
+          title: window.title,
+          x: window.x,
+          y: window.y,
+          width: window.width,
+          height: window.height,
+          processId: window.processId,
+          isMinimized: false,
+        },
+      ]);
+    } catch (err) {
+      console.error("윈도우 생성 실패:", err);
+    }
   };
 
   const closeWindow = () => {
@@ -121,11 +148,18 @@ const DesktopPage = () => {
         {windows.length > 0 && !windows[0].isMinimized && (
           <Window
             title="Terminal"
+            x={windows[0].x}
+            y={windows[0].y}
+            width={windows[0].width}
+            height={windows[0].height}
+            isDarkMode={isDarkMode}
             onClose={closeWindow}
             onMinimize={minimizeWindow}
-            isDarkMode={isDarkMode}
           >
-            <Terminal isDarkMode={isDarkMode} />
+            <Terminal
+              isDarkMode={isDarkMode}
+              processId={windows[0].processId}
+            />
           </Window>
         )}
       </div>
