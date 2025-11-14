@@ -2,6 +2,10 @@ import { useState } from "react";
 
 interface WindowProps {
   title: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
   children: React.ReactNode;
   onClose: () => void;
   onMinimize: () => void;
@@ -10,12 +14,16 @@ interface WindowProps {
 
 export function Window({
   title,
+  x,
+  y,
+  width,
+  height,
   children,
   onClose,
   onMinimize,
   isDarkMode,
 }: WindowProps) {
-  const [position, setPosition] = useState({ x: 200, y: 100 });
+  const [position, setPosition] = useState({ x, y });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
@@ -48,7 +56,8 @@ export function Window({
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        width: "700px",
+        width: `${width}px`,
+        height: `${height}px`,
       }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -82,7 +91,9 @@ export function Window({
       </div>
 
       {/* 콘텐츠 */}
-      <div>{children}</div>
+      <div flex-1 overflow-hidden>
+        {children}
+      </div>
     </div>
   );
 }

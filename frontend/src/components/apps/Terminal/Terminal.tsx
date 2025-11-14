@@ -3,9 +3,10 @@ import { requestSyscall } from "./syscall";
 
 interface TerminalProps {
   isDarkMode: boolean;
+  processId: number;
 }
 
-export function Terminal({ isDarkMode }: TerminalProps) {
+export function Terminal({ isDarkMode, processId }: TerminalProps) {
   const [output, setOutput] = useState<string[]>([
     "SimpleOS Terminal v1.0",
     "Type 'help' for available commands",
@@ -29,7 +30,7 @@ export function Terminal({ isDarkMode }: TerminalProps) {
     setInput("");
 
     try {
-      const res = await requestSyscall({ command: trimmed });
+      const res = await requestSyscall({ command: trimmed, processId });
       if (res.cwd) {
         setCurrentPath(res.cwd);
       }
@@ -78,7 +79,7 @@ export function Terminal({ isDarkMode }: TerminalProps) {
 
   return (
     <div
-      className={`flex h-96 flex-col p-4 font-mono ${
+      className={`flex h-[463px] flex-col p-4 font-mono ${
         isDarkMode ? "bg-gray-900 text-green-400" : "bg-gray-50 text-blue-600"
       }`}
     >

@@ -3,6 +3,7 @@ import api from "@/api/axiosInstance";
 interface SyscallRequest {
   command: string;
   data?: string;
+  processId: number;
 }
 
 interface SyscallResponse {
@@ -12,9 +13,6 @@ interface SyscallResponse {
 }
 
 export const requestSyscall = async (payload: SyscallRequest) => {
-  const res = await api.post<SyscallResponse>("/syscall", {
-    processId: 1,
-    ...payload,
-  });
+  const res = await api.post<SyscallResponse>("/syscall", payload);
   return res.data;
 };
