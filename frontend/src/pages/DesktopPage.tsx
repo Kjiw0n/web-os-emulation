@@ -1,5 +1,6 @@
 import Icn from "@/assets/Icons";
 import { Terminal } from "@/components/apps/Terminal/Terminal";
+import { Notepad } from "@/components/apps/Notepad/Notepad"; // Notepad 컴포넌트 import
 import { openWindow } from "@/components/Window/windowAPI";
 import { Window } from "@/components/Window/Window";
 import { useState } from "react";
@@ -13,64 +14,79 @@ interface WindowState {
   height: number;
   processId: number;
   isMinimized: boolean;
+  program: "terminal" | "notepad";
 }
 
 const DesktopPage = () => {
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  const openTerminal = async () => {
+  const OpenWindow = async (program: "terminal" | "notepad") => {
     try {
-      const window = await openWindow({
-        title: "Terminal",
-        x: 200,
-        y: 100,
-        width: 700,
-        height: 500,
-        program: "terminal",
+      const config = {
+        terminal: { title: "Terminal", width: 700, height: 500 },
+        notepad: { title: "Notepad", width: 800, height: 600 },
+      };
+
+      const { title, width, height } = config[program];
+
+      const windowData = await openWindow({
+        title,
+        x: 200 + windows.length * 30,
+        y: 100 + windows.length * 30,
+        width,
+        height,
+        program,
       });
 
       setWindows((prev) => [
         ...prev,
         {
-          id: window.windowId,
-          title: window.title,
-          x: window.x,
-          y: window.y,
-          width: window.width,
-          height: window.height,
-          processId: window.processId,
+          id: windowData.windowId,
+          title: windowData.title,
+          x: windowData.x,
+          y: windowData.y,
+          width: windowData.width,
+          height: windowData.height,
+          processId: windowData.processId,
           isMinimized: false,
+          program: program,
         },
       ]);
     } catch (err) {
-      console.error("윈도우 생성 실패:", err);
+      console.error(`${program} 실행 실패:`, err);
     }
   };
 
-  const closeWindow = () => {
-    setWindows([]);
+  // ID 기반으로 특정 윈도우 닫기
+  const closeWindow = (id: number) => {
+    setWindows((prev) => prev.filter((window) => window.id !== id));
   };
 
-  const minimizeWindow = () => {
-    setWindows([{ ...windows[0], isMinimized: true }]);
+  // ID 기반으로 특정 윈도우 최소화
+  const minimizeWindow = (id: number) => {
+    setWindows((prev) =>
+      prev.map((window) =>
+        window.id === id ? { ...window, isMinimized: true } : window
+      )
+    );
   };
 
-  const restoreWindow = () => {
-    setWindows([{ ...windows[0], isMinimized: false }]);
+  // ID 기반으로 특정 윈도우 복원
+  const restoreWindow = (id: number) => {
+    setWindows((prev) =>
+      prev.map((window) =>
+        window.id === id ? { ...window, isMinimized: false } : window
+      )
+    );
   };
 
-  const handleShutdown = () => {
-    window.location.reload();
-  };
-
-  const handleRestart = () => {
-    window.location.reload();
-  };
+  const handleShutdown = () => window.location.reload();
+  const handleRestart = () => window.location.reload();
 
   return (
     <div
-      className={`flex h-screen w-screen flex-col ${isDarkMode ? "bg-gray-900" : "bg-gray-200"}`}
+      className={`flex h-screen w-screen flex-col ${ isDarkMode ? "bg-gray-900" : "bg-gray-200"}`}
     >
       {/* 상단 툴바 */}
       <div
@@ -120,49 +136,86 @@ const DesktopPage = () => {
 
       {/* 바탕화면 */}
       <div className="flex-1 p-8">
-        <button
-          className={`flex w-24 flex-col items-center gap-2 rounded-lg p-4 transition-colors ${
-            isDarkMode ? "hover:bg-white/10" : "hover:bg-gray-300/50"
-          }`}
-          onDoubleClick={openTerminal}
-        >
-          <div
-            className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
-              isDarkMode
-                ? "border-gray-600 bg-gray-800"
-                : "border-gray-400 bg-white"
+          {/* 터미널 아이콘 */}
+          <button
+            className={`flex w-24 flex-col items-center gap-2 rounded-lg p-4 transition-colors ${
+              isDarkMode ? "hover:bg-white/10" : "hover:bg-gray-300/50"
             }`}
+            onDoubleClick={() => OpenWindow("terminal")}
           >
-            <Icn.Terminal
-              className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
-            />
-          </div>
-          <span
-            className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}
+            <div
+              className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
+                isDarkMode
+                  ? "border-gray-600 bg-gray-800"
+                  : "border-gray-400 bg-white"
+              }`}
+            >
+              <Icn.Terminal
+                className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
+              />
+            </div>
+            <span
+              className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}
+            >
+              Terminal
+            </span>
+          </button>
+
+          {/* 메모장 아이콘 */}
+          <button
+            className={`flex w-24 flex-col items-center gap-2 rounded-lg p-4 transition-colors ${
+              isDarkMode ? "hover:bg-white/10" : "hover:bg-gray-300/50"
+            }`}
+            onDoubleClick={() => OpenWindow("notepad")}
           >
-            Terminal
-          </span>
-        </button>
+            <div
+              className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
+                isDarkMode
+                  ? "border-gray-600 bg-gray-800"
+                  : "border-gray-400 bg-white"
+              }`}
+            >
+              <Icn.Notepad
+                className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
+              />
+            </div>
+            <span
+              className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}
+            >
+              Notepad
+            </span>
+          </button>
+        </div>
 
         {/* 윈도우 */}
-        {windows.length > 0 && !windows[0].isMinimized && (
-          <Window
-            title="Terminal"
-            x={windows[0].x}
-            y={windows[0].y}
-            width={windows[0].width}
-            height={windows[0].height}
-            isDarkMode={isDarkMode}
-            onClose={closeWindow}
-            onMinimize={minimizeWindow}
-          >
-            <Terminal
+        {windows.map((win) =>
+          !win.isMinimized ? (
+            <Window
+              key={win.id}
+              title={win.title}
+              x={win.x}
+              y={win.y}
+              width={win.width}
+              height={win.height}
               isDarkMode={isDarkMode}
-              processId={windows[0].processId}
-            />
-          </Window>
+              onClose={() => closeWindow(win.id)}
+              onMinimize={() => minimizeWindow(win.id)}
+            >
+              {win.program === "terminal" && (
+                <Terminal
+                  isDarkMode={isDarkMode}
+                  processId={win.processId}
+                />
+              )}
+              {win.program === "notepad" && (
+                <Notepad
+                  isDarkMode={isDarkMode}
+                  processId={win.processId}
+                />
+              )}
+            </Window>
+          ) : null
         )}
-      </div>
 
       {/* 하단 독 */}
       <div className="flex h-16 items-center justify-center pb-2">
@@ -174,20 +227,27 @@ const DesktopPage = () => {
           }`}
         >
           <div className="flex items-center gap-2">
-            {windows.map((window) => (
+            {windows.map((win) => (
               <button
-                key={window.id}
+                key={win.id}
                 className={`relative rounded-lg p-3 transition-colors ${
                   isDarkMode
                     ? "bg-gray-700/50 hover:bg-gray-600/50"
                     : "bg-gray-200/50 hover:bg-gray-300/50"
                 }`}
-                onClick={restoreWindow}
+                onClick={() => restoreWindow(win.id)}
               >
-                <Icn.Terminal
-                  className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
-                />
-                {!window.isMinimized && (
+                {/* 독 아이콘도 프로그램에 따라 다르게 표시 */}
+                {win.program === "terminal" ? (
+                  <Icn.Terminal
+                    className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                  />
+                ) : (
+                  <Icn.Notepad
+                    className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                  />
+                )}
+                {!win.isMinimized && (
                   <div
                     className={`absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
                       isDarkMode ? "bg-white" : "bg-gray-900"
