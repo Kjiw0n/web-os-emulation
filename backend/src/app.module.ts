@@ -8,7 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyscallModule } from './syscall/syscall.module';
 import { ProcessesModule } from './processes/processes.module';
 import { NotesModule } from './notes/notes.module';
-import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
@@ -39,6 +38,6 @@ import { UsersService } from './users/users.service';
   ],
 
   controllers: [AppController],
-  providers: [AppService, UsersService],
+  providers: [AppService],
 })
 export class AppModule {}

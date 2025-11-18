@@ -1,1 +1,11 @@
-export class NotesDto {}
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+
+export class CreateNotesDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsOptional()
+  content?: string;
+}
