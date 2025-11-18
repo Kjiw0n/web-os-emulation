@@ -32,4 +32,9 @@ export class NotesService {
 
     await this.fileSystemRepository.save(fileSystem);
   }
+
+  async getFile(id: string): Promise<void> {
+    // TODO: fileSystemService에서 파일 id로 가져오는 로직 만들기
+    // cat과 비슷하며, 조회된 텍스트를 JSON 바디에 담아 반환
+  }
 }
