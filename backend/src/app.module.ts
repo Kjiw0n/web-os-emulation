@@ -7,6 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyscallModule } from './syscall/syscall.module';
 import { ProcessesModule } from './processes/processes.module';
+import { NotesModule } from './notes/notes.module';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
@@ -33,9 +35,10 @@ import { ProcessesModule } from './processes/processes.module';
     WindowsModule,
     FileSystemModule,
     ProcessesModule,
+    NotesModule,
   ],
 
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UsersService],
 })
 export class AppModule {}
