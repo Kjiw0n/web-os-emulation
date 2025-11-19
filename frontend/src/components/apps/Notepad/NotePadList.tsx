@@ -26,6 +26,12 @@ export function MemoList({
   isDarkMode,
 }: MemoListProps) {
 
+  {/* 메모 선택 handler */}
+  const handleSelectMemo = (id: number) => {
+    setSelectedMemoId(id);
+  };
+
+  {/* 메모 item 스타일 클래스 */}
   const getMemoItemClasses = (memoId: number) =>
     clsx(
       "cursor-pointer rounded p-2 mb-1",
@@ -78,7 +84,7 @@ export function MemoList({
           memos.map((memo) => (
             <div
               key={memo.id}
-              onClick={() => setSelectedMemoId(memo.id)}
+              onClick={() => handleSelectMemo(memo.id)}
               className={getMemoItemClasses(memo.id)}
             >
               {memo.title}
