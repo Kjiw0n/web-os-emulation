@@ -86,7 +86,7 @@ export class FileSystemRepository {
     return this.repo.find({
       where: { fileExtension: 'txt' },
       order: {
-        updatedAt: 'ASC',
+        updatedAt: 'DESC',
       },
     });
   }
