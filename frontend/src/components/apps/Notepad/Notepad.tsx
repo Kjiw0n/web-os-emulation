@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NoteList } from "./NotePadList";
 import { NoteEditor } from "./NotePadEditor";
-import { createNote } from "./notes";
+import { createNote, fetchNotes } from "./notes";
 
 interface Note {
   id: number;
-  title: string;
+  name: string;
   content: string;
 }
 
@@ -14,22 +14,34 @@ interface NotepadProps {
   processId: number; 
 }
 
-export function Notepad({ isDarkMode, processId }: NotepadProps) {
+export function Notepad({ isDarkMode }: NotepadProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function loadNotes() {
+      try {
+        const data = await fetchNotes();
+        setNotes(data);
+      } catch (error) {
+        console.error("노트 목록 로딩 실패:", error);
+      }
+    }
+    loadNotes();
+  }, []);
 
   const selectedNote = notes.find((m) => m.id === selectedNoteId);
 
   const addNote = async () => {
     try {
       const newNoteData = await createNote({
-        title: "새 파일",
+        name: "새 파일",
         content: "",
       });
 
       setNotes([{
         id: newNoteData.id,      
-        title: newNoteData.title,
+        name: newNoteData.name,
         content: "",          
       }, ...notes]);
 
