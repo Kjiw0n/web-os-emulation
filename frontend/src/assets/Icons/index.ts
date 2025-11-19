@@ -4,6 +4,9 @@ import Power from "./Power.svg";
 import PowerBig from "./PowerBig.svg";
 import Restart from "./Restart.svg";
 import Terminal from "./Terminal.svg";
+import Notepad from "./NotePad.svg";
+import Bin from "./Bin.svg";
+import Plus from "./Plus.svg";
 
 const Icn = {
   DarkMode,
@@ -12,6 +15,9 @@ const Icn = {
   PowerBig,
   Restart,
   Terminal,
+  Notepad,
+  Bin,
+  Plus,
 };
 
 export default Icn;

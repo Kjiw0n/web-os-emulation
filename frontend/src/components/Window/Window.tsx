@@ -91,7 +91,7 @@ export function Window({
       </div>
 
       {/* 콘텐츠 */}
-      <div flex-1 overflow-hidden>
+      <div className="flex-1 h-full overflow-hidden">
         {children}
       </div>
     </div>
