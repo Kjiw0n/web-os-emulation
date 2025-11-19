@@ -33,8 +33,24 @@ export class NotesService {
     await this.fileSystemRepository.save(fileSystem);
   }
 
-  async getFile(id: string): Promise<void> {
-    // TODO: fileSystemService에서 파일 id로 가져오는 로직 만들기
-    // cat과 비슷하며, 조회된 텍스트를 JSON 바디에 담아 반환
+  async getFile(id: string): Promise<string> {
+    const fileSystem = await this.fileSystemRepository.findById(parseInt(id));
+
+    if (!fileSystem) {
+      throw new Error(`파일 ID ${id}를 찾을 수 없습니다.`);
+    }
+
+    if (fileSystem.type !== FileType.FILE) {
+      throw new Error(`'${fileSystem.name}'는 파일이 아닙니다.`);
+    }
+
+    if (!fileSystem.contentUrl) {
+      throw new Error(`'${fileSystem.name}'이 손상되었습니다.`);
+    }
+
+    const url = new URL(fileSystem.contentUrl);
+    const key = url.pathname.slice(1); // 앞의 '/' 제거
+
+    return await this.s3Service.downloadFile(key);
   }
 }
