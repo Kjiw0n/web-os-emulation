@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { MemoList } from "./MemoList";
-import { MemoEditor } from "./MemoEditor";
+import { MemoList } from "./NotePadList";
+import { MemoEditor } from "./NotePadEditor";
 
 interface Memo {
   id: number;
