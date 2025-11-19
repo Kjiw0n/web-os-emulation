@@ -131,20 +131,43 @@ export class CollaborationGateway
    * 해당 Room의 Y.Doc에 변경사항을 적용하고 다른 클라이언트들에게 브로드캐스트합니다.
    *
    * @param client - 메시지를 보낸 클라이언트 소켓
-   * @param payload - 클라이언트가 전송한 데이터. Yjs 업데이트 메시지 등을 포함합니다.
+   * @param payload - 클라이언트가 전송한 데이터({ type, content }). Yjs 업데이트 메시지 등을 포함합니다.
    */
   @SubscribeMessage('message')
   handleMessage(
     @ConnectedSocket() client: ClientSocket,
-    @MessageBody() payload: any,
+    @MessageBody() payload: { type: string; content: string },
   ) {
     const fileId = client.fileId;
-    if (fileId) {
-      const room = this.rooms.get(fileId);
-      if (!room) return;
-    }
 
-    // TODO: update, awareness 등 로직 구현
+    if (!fileId || !this.rooms.has(fileId)) return;
+    const room = this.rooms.get(fileId)!;
+
+    const { type, content } = payload;
+
+    if (type === 'update') {
+      try {
+        const update = this.fromBase64(content);
+
+        // 서버 문서 업데이트
+        Y.applyUpdate(room.doc, update);
+
+        // room의 다른 클라이언트에게 브로드캐스트
+        room.clients.forEach((otherClient) => {
+          if (
+            otherClient !== client &&
+            otherClient.readyState === WebSocket.OPEN
+          ) {
+            this.sendToClient(otherClient, {
+              type: 'update',
+              data: content,
+            });
+          }
+        });
+      } catch (e) {
+        console.error('Update 처리 중 에러:', e);
+      }
+    }
   }
 
   private sendToClient(client: ClientSocket, message: any) {
