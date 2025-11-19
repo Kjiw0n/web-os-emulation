@@ -4,7 +4,7 @@ import Plus from "@/assets/Icons/Plus.svg";
 
 interface Note {
   id: number;
-  title: string;
+  name: string;
   content: string;
 }
 
@@ -87,7 +87,7 @@ export function NoteList({
               onClick={() => handleSelectNote(note.id)}
               className={getNoteItemClasses(note.id)}
             >
-              {note.title}
+              {note.name}
             </div>
           ))
         ) : (
