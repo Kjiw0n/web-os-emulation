@@ -1,6 +1,6 @@
 import Icn from "@/assets/Icons";
 import { Terminal } from "@/components/apps/Terminal/Terminal";
-import { Notepad } from "@/components/apps/Notepad/Notepad"; // Notepad 컴포넌트 import
+import { Notepad } from "@/components/apps/Notepad/Notepad";
 import { openWindow } from "@/components/Window/windowAPI";
 import { Window } from "@/components/Window/Window";
 import { useState } from "react";
@@ -16,6 +16,16 @@ interface WindowState {
   isMinimized: boolean;
   program: "terminal" | "notepad";
 }
+
+const appMap = {
+  terminal: Terminal,
+  notepad: Notepad,
+};
+
+const appIconMap = {
+  terminal: Icn.Terminal,
+  notepad: Icn.Notepad,
+};
 
 const DesktopPage = () => {
   const [windows, setWindows] = useState<WindowState[]>([]);
@@ -136,126 +146,77 @@ const DesktopPage = () => {
 
       {/* 바탕화면 */}
       <div className="flex-1 p-8">
-          {/* 터미널 아이콘 */}
-          <button
-            className={`flex w-24 flex-col items-center gap-2 rounded-lg p-4 transition-colors ${
-              isDarkMode ? "hover:bg-white/10" : "hover:bg-gray-300/50"
-            }`}
-            onDoubleClick={() => OpenWindow("terminal")}
-          >
-            <div
-              className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
-                isDarkMode
-                  ? "border-gray-600 bg-gray-800"
-                  : "border-gray-400 bg-white"
+        {/* 아이콘 */}
+        {Object.keys(appMap).map((program) => {
+          const AppIcon = appIconMap[program as keyof typeof appIconMap];
+          return (
+            <button
+              key={program}
+              className={`flex w-24 flex-col items-center gap-2 rounded-lg p-4 transition-colors ${
+                isDarkMode ? "hover:bg-white/10" : "hover:bg-gray-300/50"
               }`}
+              onDoubleClick={() => OpenWindow(program as keyof typeof appMap)}
             >
-              <Icn.Terminal
-                className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
-              />
-            </div>
-            <span
-              className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}
-            >
-              Terminal
-            </span>
-          </button>
+              <div className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
+                isDarkMode ? "border-gray-600 bg-gray-800" : "border-gray-400 bg-white"
+              }`}>
+                <AppIcon className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`} />
+              </div>
+              <span className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}>{program}</span>
+            </button>
+          );
+        })}
+      </div>
 
-          {/* 메모장 아이콘 */}
-          <button
-            className={`flex w-24 flex-col items-center gap-2 rounded-lg p-4 transition-colors ${
-              isDarkMode ? "hover:bg-white/10" : "hover:bg-gray-300/50"
-            }`}
-            onDoubleClick={() => OpenWindow("notepad")}
+      {/* 윈도우 */}
+      {windows.map((win) =>
+        !win.isMinimized ? (
+          <Window
+            key={win.id}
+            title={win.title}
+            x={win.x}
+            y={win.y}
+            width={win.width}
+            height={win.height}
+            isDarkMode={isDarkMode}
+            onClose={() => closeWindow(win.id)}
+            onMinimize={() => minimizeWindow(win.id)}
           >
-            <div
-              className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
-                isDarkMode
-                  ? "border-gray-600 bg-gray-800"
-                  : "border-gray-400 bg-white"
-              }`}
-            >
-              <Icn.Notepad
-                className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
-              />
-            </div>
-            <span
-              className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}
-            >
-              Notepad
-            </span>
-          </button>
-        </div>
-
-        {/* 윈도우 */}
-        {windows.map((win) =>
-          !win.isMinimized ? (
-            <Window
-              key={win.id}
-              title={win.title}
-              x={win.x}
-              y={win.y}
-              width={win.width}
-              height={win.height}
-              isDarkMode={isDarkMode}
-              onClose={() => closeWindow(win.id)}
-              onMinimize={() => minimizeWindow(win.id)}
-            >
-              {win.program === "terminal" && (
-                <Terminal
-                  isDarkMode={isDarkMode}
-                  processId={win.processId}
-                />
-              )}
-              {win.program === "notepad" && (
-                <Notepad
-                  isDarkMode={isDarkMode}
-                  processId={win.processId}
-                />
-              )}
-            </Window>
-          ) : null
-        )}
+            {(() => {
+              const AppComponent = appMap[win.program];
+              return AppComponent ? (
+                <AppComponent isDarkMode={isDarkMode} processId={win.processId} />
+              ) : null;
+            })()}
+          </Window>
+        ) : null
+      )}
 
       {/* 하단 독 */}
       <div className="flex h-16 items-center justify-center pb-2">
-        <div
-          className={`rounded-2xl border px-4 py-2 shadow-2xl backdrop-blur-md ${
-            isDarkMode
-              ? "border-gray-700/50 bg-gray-800/60"
-              : "border-gray-300/50 bg-white/60"
-          }`}
-        >
+        <div className={`rounded-2xl border px-4 py-2 shadow-2xl backdrop-blur-md ${
+          isDarkMode ? "border-gray-700/50 bg-gray-800/60" : "border-gray-300/50 bg-white/60"
+        }`}>
           <div className="flex items-center gap-2">
-            {windows.map((win) => (
-              <button
-                key={win.id}
-                className={`relative rounded-lg p-3 transition-colors ${
-                  isDarkMode
-                    ? "bg-gray-700/50 hover:bg-gray-600/50"
-                    : "bg-gray-200/50 hover:bg-gray-300/50"
-                }`}
-                onClick={() => restoreWindow(win.id)}
-              >
-                {/* 독 아이콘도 프로그램에 따라 다르게 표시 */}
-                {win.program === "terminal" ? (
-                  <Icn.Terminal
-                    className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
-                  />
-                ) : (
-                  <Icn.Notepad
-                    className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
-                  />
-                )}
-                {!win.isMinimized && (
-                  <div
-                    className={`absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
+            {windows.map((win) => {
+              const AppIcon = appIconMap[win.program];
+              return (
+                <button
+                  key={win.id}
+                  className={`relative rounded-lg p-3 transition-colors ${
+                    isDarkMode ? "bg-gray-700/50 hover:bg-gray-600/50" : "bg-gray-200/50 hover:bg-gray-300/50"
+                  }`}
+                  onClick={() => restoreWindow(win.id)}
+                >
+                  <AppIcon className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`} />
+                  {!win.isMinimized && (
+                    <div className={`absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
                       isDarkMode ? "bg-white" : "bg-gray-900"
-                    }`}
-                  />
-                )}
-              </button>
-            ))}
+                    }`} />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
