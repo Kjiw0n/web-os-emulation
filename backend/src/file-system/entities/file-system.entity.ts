@@ -75,13 +75,4 @@ export class FileSystem {
   hasParent(): this is FileSystem & { parentId: number } {
     return this.parentId !== null;
   }
-
-  getStorageKey(): string | null {
-    if (!this.contentUrl) {
-      return null;
-    }
-
-    const urlObj = new URL(this.contentUrl);
-    return urlObj.pathname.substring(1);
-  }
 }
