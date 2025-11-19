@@ -76,4 +76,18 @@ export class FileSystemRepository {
   async deleteById(id: number): Promise<void> {
     await this.repo.delete({ id });
   }
+
+  /**
+   * 파일 시스템 전체에서 .txt 확장자를 가진 노드를 조회합니다.
+   *
+   * @returns {Promise<FileSystem[]>}
+   */
+  async findAllTextFiles(): Promise<FileSystem[]> {
+    return this.repo.find({
+      where: { fileExtension: 'txt' },
+      order: {
+        updatedAt: 'ASC',
+      },
+    });
+  }
 }
