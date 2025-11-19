@@ -25,36 +25,26 @@ export function Window({
 }: WindowProps) {
   const [position, setPosition] = useState({ x, y });
   const [isDragging, setIsDragging] = useState(false);
-  const dragStateRef = useRef({
-    isDragging: false,
-    dragStart: { x: 0, y: 0 },
-    position: { x, y },
-  });
+  const dragStateRef = useRef({ x: 0, y: 0 });
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    dragStateRef.current.isDragging = true;
-    dragStateRef.current.dragStart = {
+    dragStateRef.current = {
       x: e.clientX - position.x,
       y: e.clientY - position.y,
     };
-    dragStateRef.current.position = position;
     setIsDragging(true);
   };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (dragStateRef.current.isDragging) {
-        const newPosition = {
-          x: e.clientX - dragStateRef.current.dragStart.x,
-          y: e.clientY - dragStateRef.current.dragStart.y,
-        };
-        dragStateRef.current.position = newPosition;
-        setPosition(newPosition);
-      }
+      const newPosition = {
+        x: e.clientX - dragStateRef.current.x,
+        y: e.clientY - dragStateRef.current.y,
+      };
+      setPosition(newPosition);
     };
 
     const handleMouseUp = () => {
-      dragStateRef.current.isDragging = false;
       setIsDragging(false);
     };
 
