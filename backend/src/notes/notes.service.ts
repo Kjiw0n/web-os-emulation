@@ -12,6 +12,12 @@ export class NotesService {
     private readonly fileSystemRepository: FileSystemRepository,
   ) {}
 
+  /**
+   * 새로운 노트 파일을 생성합니다.
+   * @param {CreateNotesDto} createNotesDto - 생성할 노트의 정보 (제목, 내용)
+   * @returns {Promise<void>}
+   * @description S3에 파일 내용을 저장하고, 파일 시스템에 메타데이터를 저장합니다.
+   */
   async create(createNotesDto: CreateNotesDto) {
     const fileName = createNotesDto.title;
 
@@ -37,5 +43,33 @@ export class NotesService {
       title: savedFileSystem.name,
       content: content,
     };
+  }
+
+  /**
+   * 파일 ID로 노트 파일의 내용을 조회합니다.
+   * @param {string} id - 조회할 파일의 ID
+   * @returns {Promise<string>} 파일의 내용
+   * @throws {Error} 파일을 찾을 수 없거나, 파일이 아니거나, Object Storage에 파일이 없을 겨우
+   * @description S3에서 파일 내용을 다운로드합니다.
+   */
+  async getFile(id: string): Promise<string> {
+    const fileSystem = await this.fileSystemRepository.findById(parseInt(id));
+
+    if (!fileSystem) {
+      throw new Error(`파일 ID ${id}를 찾을 수 없습니다.`);
+    }
+
+    if (fileSystem.type !== FileType.FILE) {
+      throw new Error(`'${fileSystem.name}'는 파일이 아닙니다.`);
+    }
+
+    if (!fileSystem.contentUrl) {
+      throw new Error(`'${fileSystem.name}'이 손상되었습니다.`);
+    }
+
+    const url = new URL(fileSystem.contentUrl);
+    const key = url.pathname.slice(1); // 앞의 '/' 제거
+
+    return await this.s3Service.downloadFile(key);
   }
 }

@@ -8,5 +8,6 @@ import { FileSystemModule } from '../file-system/file-system.module';
   imports: [S3Module, FileSystemModule],
   controllers: [NotesController],
   providers: [NotesService],
+  exports: [NotesService],
 })
 export class NotesModule {}
