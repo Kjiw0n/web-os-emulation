@@ -6,6 +6,8 @@ import * as Y from 'yjs';
 @Injectable()
 export class NoteDocumentManager implements OnModuleInit {
   private documents = new Map<number, Y.Doc>();
+  private updateCounts = new Map<number, number>();
+  private readonly SNAPSHOT_THRESHOLD = 100;
 
   constructor(
     private readonly fileSystemRepo: FileSystemRepository,
@@ -54,6 +56,7 @@ export class NoteDocumentManager implements OnModuleInit {
     if (!doc) {
       doc = new Y.Doc();
       this.documents.set(fileId, doc);
+      this.updateCounts.set(fileId, 0);
     }
 
     return doc;
@@ -65,6 +68,7 @@ export class NoteDocumentManager implements OnModuleInit {
     if (doc) {
       doc.destroy();
       this.documents.delete(fileId);
+      this.updateCounts.delete(fileId);
     }
   }
 
@@ -72,5 +76,24 @@ export class NoteDocumentManager implements OnModuleInit {
   applyUpdate(fileId: number, update: Uint8Array): void {
     const doc = this.getOrCreate(fileId);
     Y.applyUpdate(doc, update);
+
+    const count = (this.updateCounts.get(fileId) || 0) + 1;
+    this.updateCounts.set(fileId, count);
+  }
+
+  shouldCreateSnapshot(fileId: number): boolean {
+    const count = this.updateCounts.get(fileId) || 0;
+    return count >= this.SNAPSHOT_THRESHOLD;
+  }
+
+  resetUpdateCount(fileId: number): void {
+    this.updateCounts.set(fileId, 0);
+  }
+
+  encodeDocument(fileId: number): Uint8Array | null {
+    const doc = this.documents.get(fileId);
+    if (!doc) return null;
+
+    return Y.encodeStateAsUpdate(doc);
   }
 }
