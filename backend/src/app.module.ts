@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyscallModule } from './syscall/syscall.module';
 import { ProcessesModule } from './processes/processes.module';
 import { NotesModule } from './notes/notes.module';
+import { CollaborationModule } from './gateway/collaboration.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { NotesModule } from './notes/notes.module';
     FileSystemModule,
     ProcessesModule,
     NotesModule,
+    CollaborationModule,
   ],
 
   controllers: [AppController],
