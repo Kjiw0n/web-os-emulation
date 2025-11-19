@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyscallModule } from './syscall/syscall.module';
 import { ProcessesModule } from './processes/processes.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ProcessesModule } from './processes/processes.module';
     WindowsModule,
     FileSystemModule,
     ProcessesModule,
+    NotesModule,
   ],
 
   controllers: [AppController],

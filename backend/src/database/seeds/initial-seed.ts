@@ -33,6 +33,7 @@ async function seed() {
       { name: 'home' },
       { name: 'program' },
       { name: 'example' },
+      { name: 'notes' },
     ];
 
     for (const dir of directories) {
