@@ -18,7 +18,7 @@ export class NotesService {
    * @returns {Promise<void>}
    * @description S3에 파일 내용을 저장하고, 파일 시스템에 메타데이터를 저장합니다.
    */
-  async create(createNotesDto: CreateNotesDto): Promise<void> {
+  async create(createNotesDto: CreateNotesDto) {
     const fileName = createNotesDto.title;
 
     const content = createNotesDto.content || '';
@@ -36,7 +36,13 @@ export class NotesService {
     fileSystem.parentId = 5;
     fileSystem.permissions = 'rwx';
 
-    await this.fileSystemRepository.save(fileSystem);
+    const savedFileSystem = await this.fileSystemRepository.save(fileSystem);
+
+    return {
+      fileId: savedFileSystem.id,
+      title: savedFileSystem.name,
+      content: content,
+    };
   }
 
   /**
