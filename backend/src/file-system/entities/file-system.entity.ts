@@ -30,13 +30,8 @@ export class FileSystem {
   @Column({ type: 'enum', enum: FileType })
   type: FileType;
 
-  @Column({
-    name: 'physical_path',
-    type: 'varchar',
-    length: 768,
-    nullable: true,
-  })
-  physicalPath: string | null;
+  @Column({ type: 'varchar', name: 'icon_url', nullable: true })
+  iconUrl: string | null;
 
   @Column({ type: 'varchar', name: 'content_url', nullable: true })
   contentUrl: string | null;
