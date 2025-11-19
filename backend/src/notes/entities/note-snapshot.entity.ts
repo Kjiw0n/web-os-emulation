@@ -42,4 +42,12 @@ export class NoteSnapshot {
   getStorageUrl(baseUrl: string): string {
     return `${baseUrl}/${this.storageKey}`;
   }
+
+  static create(fileId: number, storageKey: string, version: number) {
+    const noteSnapshot = new NoteSnapshot();
+    noteSnapshot.fileId = fileId;
+    noteSnapshot.storageKey = storageKey;
+    noteSnapshot.version = version;
+    return noteSnapshot;
+  }
 }
