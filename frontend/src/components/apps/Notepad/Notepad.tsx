@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NoteList } from "./NotePadList";
 import { NoteEditor } from "./NotePadEditor";
+import { createNote } from "./notes";
 
 interface Note {
   id: number;
@@ -19,15 +20,23 @@ export function Notepad({ isDarkMode, processId }: NotepadProps) {
 
   const selectedNote = notes.find((m) => m.id === selectedNoteId);
 
-  const addNote = () => {
-    const newNote: Note = {
-      id: Date.now(),
-      title: "새 파일",
-      content: "",
-    };
+  const addNote = async () => {
+    try {
+      const newNoteData = await createNote({
+        title: "새 파일",
+        content: "",
+      });
 
-    setNotes([newNote, ...notes]);
-    setSelectedNoteId(newNote.id);
+      setNotes([{
+        id: newNoteData.id,      
+        title: newNoteData.title,
+        content: "",          
+      }, ...notes]);
+
+      setSelectedNoteId(newNoteData.id);
+    } catch (error) {
+      console.error("메모 생성 실패:", error);
+    }
   };
 
   const deleteNote = () => {
