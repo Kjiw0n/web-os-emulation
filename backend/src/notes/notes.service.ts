@@ -12,7 +12,7 @@ export class NotesService {
     private readonly fileSystemRepository: FileSystemRepository,
   ) {}
 
-  async create(createNotesDto: CreateNotesDto): Promise<void> {
+  async create(createNotesDto: CreateNotesDto) {
     const fileName = createNotesDto.title;
 
     const content = createNotesDto.content || '';
@@ -30,6 +30,12 @@ export class NotesService {
     fileSystem.parentId = 5;
     fileSystem.permissions = 'rwx';
 
-    await this.fileSystemRepository.save(fileSystem);
+    const savedFileSystem = await this.fileSystemRepository.save(fileSystem);
+
+    return {
+      fileId: savedFileSystem.id,
+      title: savedFileSystem.name,
+      content: content,
+    };
   }
 }
