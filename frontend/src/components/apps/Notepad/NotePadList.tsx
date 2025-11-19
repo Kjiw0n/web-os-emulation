@@ -6,6 +6,7 @@ interface Note {
   id: number;
   name: string;
   content: string;
+  updatedAt?: string;
 }
 
 interface NoteListProps {
@@ -87,7 +88,12 @@ export function NoteList({
               onClick={() => handleSelectNote(note.id)}
               className={getNoteItemClasses(note.id)}
             >
-              {note.name}
+            <div className="font-medium">{note.name}</div>
+            {note.updatedAt && (
+              <div className="text-xs text-gray-400">
+                {new Date(note.updatedAt).toLocaleString()}
+              </div>
+            )}
             </div>
           ))
         ) : (
