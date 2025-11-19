@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface WindowProps {
   title: string;
@@ -25,28 +25,49 @@ export function Window({
 }: WindowProps) {
   const [position, setPosition] = useState({ x, y });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const dragStateRef = useRef({
+    isDragging: false,
+    dragStart: { x: 0, y: 0 },
+    position: { x, y },
+  });
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStart({
+    dragStateRef.current.isDragging = true;
+    dragStateRef.current.dragStart = {
       x: e.clientX - position.x,
       y: e.clientY - position.y,
-    });
+    };
+    dragStateRef.current.position = position;
+    setIsDragging(true);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (dragStateRef.current.isDragging) {
+        const newPosition = {
+          x: e.clientX - dragStateRef.current.dragStart.x,
+          y: e.clientY - dragStateRef.current.dragStart.y,
+        };
+        dragStateRef.current.position = newPosition;
+        setPosition(newPosition);
+      }
+    };
+
+    const handleMouseUp = () => {
+      dragStateRef.current.isDragging = false;
+      setIsDragging(false);
+    };
+
     if (isDragging) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
-    }
-  };
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, [isDragging]);
 
   return (
     <div
@@ -59,8 +80,6 @@ export function Window({
         width: `${width}px`,
         height: `${height}px`,
       }}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
     >
       {/* 타이틀바 */}
       <div
@@ -74,26 +93,24 @@ export function Window({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <button
-              className="h-3 w-3 rounded-full bg-red-500 transition-colors hover:bg-red-600"
+              className="bg-red-500 hover:bg-red-600 rounded-full w-3 h-3 transition-colors"
               onClick={onClose}
             />
             <button
-              className="h-3 w-3 rounded-full bg-yellow-500 transition-colors hover:bg-yellow-600"
+              className="bg-yellow-500 hover:bg-yellow-600 rounded-full w-3 h-3 transition-colors"
               onClick={onMinimize}
             />
-            <button className="h-3 w-3 rounded-full bg-green-500 transition-colors hover:bg-green-600" />
+            <button className="bg-green-500 hover:bg-green-600 rounded-full w-3 h-3 transition-colors" />
           </div>
         </div>
-        <span className="absolute left-1/2 -translate-x-1/2 text-sm">
+        <span className="left-1/2 absolute text-sm -translate-x-1/2">
           {title}
         </span>
         <div className="w-16" />
       </div>
 
       {/* 콘텐츠 */}
-      <div className="flex-1 h-full overflow-hidden">
-        {children}
-      </div>
+      <div className="flex-1 h-full overflow-hidden">{children}</div>
     </div>
   );
 }
