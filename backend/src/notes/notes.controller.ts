@@ -24,4 +24,9 @@ export class NotesController {
   async getFile(@Query('id') id: string): Promise<string> {
     return this.notesService.getFile(id);
   }
+
+  @Get('list')
+  async findAllNotes() {
+    return this.notesService.findAllNotes();
+  }
 }
