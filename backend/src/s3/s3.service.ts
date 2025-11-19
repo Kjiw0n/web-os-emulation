@@ -31,6 +31,27 @@ export class S3Service implements IS3Service {
   }
 
   async uploadFile(content: string, fileName: string): Promise<string> {
+    return this.upload(content, fileName, 'text/plain');
+  }
+
+  async uploadBinary(content: Uint8Array, fileName: string): Promise<string> {
+    return this.upload(content, fileName, 'application/octet-stream');
+  }
+
+  async downloadFile(key: string): Promise<string> {
+    const buffer = await this.download(key);
+    return buffer.toString('utf-8');
+  }
+
+  async downloadBinary(key: string): Promise<Uint8Array> {
+    return this.download(key);
+  }
+
+  private async upload(
+    content: string | Uint8Array,
+    fileName: string,
+    contentType: string,
+  ): Promise<string> {
     const key = `${randomUUID()}-${fileName}`;
 
     await this.s3.send(
@@ -39,22 +60,21 @@ export class S3Service implements IS3Service {
         Key: key,
         Body: content,
         ACL: 'public-read',
+        ContentType: contentType,
       }),
     );
 
-    // NCP Object Storage의 공개 URL 형식
     return `https://${this.bucketName}.kr.object.ncloudstorage.com/${key}`;
   }
 
   /** 파일 다운로드 (내용 읽기) */
-  async downloadFile(key: string): Promise<string> {
+  private async download(key: string): Promise<Buffer> {
     const command = new GetObjectCommand({
       Bucket: this.bucketName,
       Key: key,
     });
 
     const response = await this.s3.send(command);
-
     const stream = response.Body as Readable;
     const chunks: Uint8Array[] = [];
 
@@ -62,6 +82,6 @@ export class S3Service implements IS3Service {
       chunks.push(chunk as Uint8Array);
     }
 
-    return Buffer.concat(chunks).toString('utf-8');
+    return Buffer.concat(chunks);
   }
 }
