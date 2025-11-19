@@ -8,7 +8,7 @@ export class NotesController {
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createNotesDto: CreateNotesDto): Promise<void> {
+  async create(@Body() createNotesDto: CreateNotesDto) {
     return this.notesService.create(createNotesDto);
   }
 }
