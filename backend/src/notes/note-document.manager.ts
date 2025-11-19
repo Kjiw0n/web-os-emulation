@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { FileSystem } from 'src/file-system/entities';
 import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { S3Service } from 'src/s3/s3.service';
 import * as Y from 'yjs';
@@ -32,13 +33,13 @@ export class NoteDocumentManager implements OnModuleInit {
 
     // 각 파일의 contentUrl에서 스냅샷 로드
     for (const file of children) {
-      const key = file.getStorageKey();
+      const key = this.getOjbStorageKey(file);
       if (!key) continue;
 
       try {
         const snapshotData = await this.s3Service.downloadBinary(key);
 
-        // string → Uint8Array 변환 및 Y.Doc 적용
+        // Uint8Array를 Y.Doc으로 변환
         const ydoc = new Y.Doc();
         Y.applyUpdate(ydoc, snapshotData);
 
@@ -47,6 +48,13 @@ export class NoteDocumentManager implements OnModuleInit {
         console.error(`Failed to load snapshot for file ${file.id}:`, error);
       }
     }
+  }
+
+  private getOjbStorageKey(file: FileSystem): string | null {
+    const url = file.contentUrl;
+    if (!url) return null;
+
+    return this.s3Service.extractKeyFromUrl(url);
   }
 
   // Y.Doc 조회 또는 생성
