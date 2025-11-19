@@ -27,7 +27,7 @@ export class NotesService {
     fileSystem.fileExtension = 'txt';
     fileSystem.contentUrl = contentUrl;
     fileSystem.size = '0';
-    fileSystem.parentId = null;
+    fileSystem.parentId = 5;
     fileSystem.permissions = 'rwx';
 
     await this.fileSystemRepository.save(fileSystem);
