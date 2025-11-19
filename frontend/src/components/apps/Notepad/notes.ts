@@ -11,7 +11,7 @@ export interface NoteResponse {
   id: number;
   name: string;
   content: string;
-  updated_at?: string;
+  updatedAt?: string;
 }
 
 export const createNote = async (payload: CreateNoteRequest) => {
