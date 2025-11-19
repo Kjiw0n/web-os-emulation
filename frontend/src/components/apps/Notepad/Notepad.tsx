@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { MemoList } from "./NotePadList";
-import { MemoEditor } from "./NotePadEditor";
+import { NoteList } from "./NotePadList";
+import { NoteEditor } from "./NotePadEditor";
 
-interface Memo {
+interface Note {
   id: number;
   title: string;
   content: string;
@@ -14,55 +14,55 @@ interface NotepadProps {
 }
 
 export function Notepad({ isDarkMode, processId }: NotepadProps) {
-  const [memos, setMemos] = useState<Memo[]>([]);
-  const [selectedMemoId, setSelectedMemoId] = useState<number | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
 
-  const selectedMemo = memos.find((m) => m.id === selectedMemoId);
+  const selectedNote = notes.find((m) => m.id === selectedNoteId);
 
-  const addMemo = () => {
-    const newMemo: Memo = {
+  const addNote = () => {
+    const newNote: Note = {
       id: Date.now(),
       title: "새 파일",
       content: "",
     };
 
-    setMemos([newMemo, ...memos]);
-    setSelectedMemoId(newMemo.id);
+    setNotes([newNote, ...notes]);
+    setSelectedNoteId(newNote.id);
   };
 
-  const deleteMemo = () => {
-    if (!selectedMemoId) return;
+  const deleteNote = () => {
+    if (!selectedNoteId) return;
 
-    setMemos(memos.filter((m) => m.id !== selectedMemoId));
-    setSelectedMemoId(null);
+    setNotes(notes.filter((m) => m.id !== selectedNoteId));
+    setSelectedNoteId(null);
   };
 
-  const updateMemoContent = (content: string) => {
-    setMemos(
-      memos.map((m) =>
-        m.id === selectedMemoId ? { ...m, content } : m
+  const updateNoteContent = (content: string) => {
+    setNotes(
+      notes.map((m) =>
+        m.id === selectedNoteId ? { ...m, content } : m
       )
     );
   };
 
   return (
     <div className="flex h-full">
-      {/* LeftPane: MemoList */}
-      <MemoList
-        memos={memos}
-        selectedMemoId={selectedMemoId}
-        setSelectedMemoId={setSelectedMemoId}
-        addMemo={addMemo}
-        deleteMemo={deleteMemo}
+      {/* LeftPane: NoteList */}
+      <NoteList
+        notes={notes}
+        selectedNoteId={selectedNoteId}
+        setSelectedNoteId={setSelectedNoteId}
+        addNote={addNote}
+        deleteNote={deleteNote}
         isDarkMode={isDarkMode}
       />
 
       {/* RightPane: Editor */}
       <div className={`flex-1 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
-        {selectedMemo ? (
-          <MemoEditor
-            memo={selectedMemo}
-            onChange={updateMemoContent}
+        {selectedNote ? (
+          <NoteEditor
+            note={selectedNote}
+            onChange={updateNoteContent}
             isDarkMode={isDarkMode}
           />
         ) : (

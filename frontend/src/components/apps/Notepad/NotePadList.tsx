@@ -2,43 +2,43 @@ import clsx from "clsx";
 import Bin from "@/assets/Icons/Bin.svg";
 import Plus from "@/assets/Icons/Plus.svg";
 
-interface Memo {
+interface Note {
   id: number;
   title: string;
   content: string;
 }
 
-interface MemoListProps {
-  memos: Memo[];
-  selectedMemoId: number | null;
-  setSelectedMemoId: (id: number) => void;
-  addMemo: () => void;
-  deleteMemo: () => void;
+interface NoteListProps {
+  notes: Note[];
+  selectedNoteId: number | null;
+  setSelectedNoteId: (id: number) => void;
+  addNote: () => void;
+  deleteNote: () => void;
   isDarkMode: boolean;
 }
 
-export function MemoList({
-  memos,
-  selectedMemoId,
-  setSelectedMemoId,
-  addMemo,
-  deleteMemo,
+export function NoteList({
+  notes,
+  selectedNoteId,
+  setSelectedNoteId,
+  addNote,
+  deleteNote,
   isDarkMode,
-}: MemoListProps) {
+}: NoteListProps) {
 
   {/* 메모 선택 handler */}
-  const handleSelectMemo = (id: number) => {
-    setSelectedMemoId(id);
+  const handleSelectNote = (id: number) => {
+    setSelectedNoteId(id);
   };
 
   {/* 메모 item 스타일 클래스 */}
-  const getMemoItemClasses = (memoId: number) =>
+  const getNoteItemClasses = (noteId: number) =>
     clsx(
       "cursor-pointer rounded p-2 mb-1",
       {
-        "bg-yellow-500 text-white": selectedMemoId === memoId,
-        "hover:bg-gray-700 text-white": selectedMemoId !== memoId && isDarkMode,
-        "hover:bg-gray-200": selectedMemoId !== memoId && !isDarkMode,
+        "bg-yellow-500 text-white": selectedNoteId === noteId,
+        "hover:bg-gray-700 text-white": selectedNoteId !== noteId && isDarkMode,
+        "hover:bg-gray-200": selectedNoteId !== noteId && !isDarkMode,
       }
     );
 
@@ -54,7 +54,7 @@ export function MemoList({
       {/* 버튼 영역 */}
       <div className="flex gap-2 mb-2">
         <button
-          onClick={addMemo}
+          onClick={addNote}
           className="flex items-center justify-center p-2 rounded"
         >
           <Plus
@@ -66,7 +66,7 @@ export function MemoList({
         </button>
 
         <button
-          onClick={deleteMemo}
+          onClick={deleteNote}
           className="flex items-center justify-center p-2 rounded"
         >
           <Bin
@@ -80,14 +80,14 @@ export function MemoList({
 
       {/* 메모 목록 */}
       <div className="flex-1 overflow-y-auto">
-        {memos.length > 0 ? (
-          memos.map((memo) => (
+        {notes.length > 0 ? (
+          notes.map((note) => (
             <div
-              key={memo.id}
-              onClick={() => handleSelectMemo(memo.id)}
-              className={getMemoItemClasses(memo.id)}
+              key={note.id}
+              onClick={() => handleSelectNote(note.id)}
+              className={getNoteItemClasses(note.id)}
             >
-              {memo.title}
+              {note.title}
             </div>
           ))
         ) : (
