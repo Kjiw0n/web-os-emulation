@@ -7,6 +7,7 @@ interface Note {
   id: number;
   name: string;
   content: string;
+  updatedAt?: string;
 }
 
 interface NotepadProps {
@@ -22,7 +23,7 @@ export function Notepad({ isDarkMode }: NotepadProps) {
     async function loadNotes() {
       try {
         const data = await getNoteList();
-        setNotes(data.map(n => ({ ...n, content: "" })));
+        setNotes(data.map(n => ({ ...n, content: "", updated_at: n.updatedAt })));
       } catch (error) {
         console.error("노트 목록 로딩 실패:", error);
       }
@@ -55,7 +56,8 @@ export function Notepad({ isDarkMode }: NotepadProps) {
       setNotes([{
         id: newNoteData.id,      
         name: newNoteData.name,
-        content: "",          
+        content: "",
+        updatedAt: newNoteData.updatedAt
       }, ...notes]);
 
       setSelectedNoteId(newNoteData.id);
