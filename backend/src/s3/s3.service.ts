@@ -84,4 +84,9 @@ export class S3Service implements IS3Service {
 
     return Buffer.concat(chunks);
   }
+
+  extractKeyFromUrl(url: string): string {
+    const urlObj = new URL(url);
+    return urlObj.pathname.substring(1); // 앞의 '/' 제거
+  }
 }
