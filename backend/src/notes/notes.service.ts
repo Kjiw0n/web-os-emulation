@@ -72,4 +72,13 @@ export class NotesService {
 
     return await this.s3Service.downloadFile(key);
   }
+
+  /**
+   * 모든 노트 파일의 목록을 조회합니다.
+   * @returns {Promise<FileSystem[]>} 노트 파일 목록
+   * @description 파일 시스템 레포지토리에서 모든 파일을 조회합니다.
+   */
+  async findAllNotes(): Promise<FileSystem[]> {
+    return this.fileSystemRepository.findAllTextFiles();
+  }
 }
