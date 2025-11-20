@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 import { NoteList } from "./NotePadList";
 import { NoteEditor } from "./NotePadEditor";
-import { createNote, getNoteList } from "./notes";
-
-interface Note {
-  id: number;
-  name: string;
-  updatedAt?: string;
-}
+import { createNote, getNoteList, type Note } from "./notes";
 
 interface NotepadProps {
   isDarkMode: boolean;
-  processId: number; 
+  processId: number;
 }
 
 export function Notepad({ isDarkMode }: NotepadProps) {
@@ -22,7 +16,7 @@ export function Notepad({ isDarkMode }: NotepadProps) {
     async function loadNotes() {
       try {
         const data = await getNoteList();
-        setNotes(data.map(n => ({ ...n, content: "", updated_at: n.updatedAt })));
+        setNotes(data);
       } catch (error) {
         console.error("노트 목록 로딩 실패:", error);
       }
@@ -36,14 +30,16 @@ export function Notepad({ isDarkMode }: NotepadProps) {
     try {
       const newNoteData = await createNote({
         name: "새 파일",
-        content: "",
       });
 
-      setNotes([{
-        id: newNoteData.id,      
-        name: newNoteData.name,
-        updatedAt: newNoteData.updatedAt
-      }, ...notes]);
+      setNotes((prevNotes) => [
+        {
+          id: newNoteData.id,
+          name: newNoteData.name,
+          updatedAt: newNoteData.updatedAt,
+        },
+        ...prevNotes,
+      ]);
 
       setSelectedNoteId(newNoteData.id);
     } catch (error) {
@@ -54,17 +50,11 @@ export function Notepad({ isDarkMode }: NotepadProps) {
   const deleteNote = () => {
     if (!selectedNoteId) return;
 
-    setNotes(notes.filter((m) => m.id !== selectedNoteId));
+    setNotes((prevNotes) => prevNotes.filter((m) => m.id !== selectedNoteId));
     setSelectedNoteId(null);
   };
 
-  const updateNoteContent = (content: string) => {
-    setNotes(
-      notes.map((m) =>
-        m.id === selectedNoteId ? { ...m, content } : m
-      )
-    );
-  };
+  const handleSelectNote = (id: number) => setSelectedNoteId(id);
 
   return (
     <div className="flex h-full">
@@ -72,7 +62,7 @@ export function Notepad({ isDarkMode }: NotepadProps) {
       <NoteList
         notes={notes}
         selectedNoteId={selectedNoteId}
-        setSelectedNoteId={(id: number) => setSelectedNoteId(id)}
+        handleSelectNote={handleSelectNote}
         addNote={addNote}
         deleteNote={deleteNote}
         isDarkMode={isDarkMode}
@@ -82,13 +72,14 @@ export function Notepad({ isDarkMode }: NotepadProps) {
       <div className={`flex-1 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
         {selectedNote ? (
           <NoteEditor
-            note={selectedNote}
-            onChange={updateNoteContent}
+            key={selectedNoteId}
+            fileId={selectedNoteId!!}
+            updatedAt={selectedNote.updatedAt}
             isDarkMode={isDarkMode}
           />
         ) : (
           <div
-            className={`h-full w-full flex flex-col items-center justify-start pt-8 px-4 ${
+            className={`flex h-full w-full flex-col items-center justify-start px-4 pt-8 ${
               isDarkMode ? "text-gray-400" : "text-gray-500"
             }`}
           >

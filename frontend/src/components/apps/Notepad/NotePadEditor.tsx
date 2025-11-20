@@ -1,35 +1,38 @@
+import { useRef } from "react";
+import { useYjs } from "./useYjs";
 import clsx from "clsx";
 
-interface Note {
-  id: number;
-  name: string;
-  updatedAt?: string;
-}
-
 interface NoteEditorProps {
-  note: Note;
-  onChange: (content: string) => void;
+  fileId: number;
+  updatedAt?: string;
   isDarkMode: boolean;
 }
 
-export function NoteEditor({ note, onChange, isDarkMode }: NoteEditorProps) {
+export function NoteEditor({ fileId, updatedAt, isDarkMode }: NoteEditorProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { handleInput } = useYjs(fileId, textareaRef);
+
   return (
-    <div className="flex flex-col h-full">
-      {note.updatedAt && (
+    <div className="flex h-full flex-col">
+      {updatedAt && (
         <div
           className={clsx(
-            "w-full text-center py-1 text-sm border-b",
-            isDarkMode ? "text-gray-400 border-gray-700" : "text-gray-500 border-gray-300"
+            "w-full border-b py-1 text-center text-sm",
+            isDarkMode
+              ? "border-gray-700 text-gray-400"
+              : "border-gray-300 text-gray-500",
           )}
         >
-          {new Date(note.updatedAt).toLocaleString()}
+          {new Date(updatedAt).toLocaleString()}
         </div>
       )}
       <textarea
-        className={`flex-1 w-full p-2 outline-none resize-none ${
+        ref={textareaRef}
+        onInput={handleInput}
+        className={`h-full w-full resize-none p-2 outline-none ${
           isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
         }`}
-        onChange={(e) => onChange(e.target.value)}
+        spellCheck={false}
       />
     </div>
   );

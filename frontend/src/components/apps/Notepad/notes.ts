@@ -7,18 +7,18 @@ export interface CreateNoteRequest {
 }
 
 // 노트 응답 타입
-export interface NoteResponse {
+export interface Note {
   id: number;
   name: string;
   updatedAt?: string;
 }
 
 export const createNote = async (payload: CreateNoteRequest) => {
-  const res = await api.post<NoteResponse>("/notes/create", payload);
+  const res = await api.post<Note>("/notes/create", payload);
   return res.data;
 };
 
-export const getNoteList = async (): Promise<NoteResponse[]> => {
-  const res = await api.get<NoteResponse[]>("/notes");
-  return res.data
+export const getNoteList = async (): Promise<Note[]> => {
+  const res = await api.get<Note[]>("/notes");
+  return res.data;
 };

@@ -129,43 +129,48 @@ export class CollaborationGateway
    * 해당 Room의 Y.Doc에 변경사항을 적용하고 다른 클라이언트들에게 브로드캐스트합니다.
    *
    * @param client - 메시지를 보낸 클라이언트 소켓
-   * @param payload - 클라이언트가 전송한 데이터. Yjs 업데이트 메시지 등을 포함합니다.
+   * @param payload - 클라이언트가 전송한 데이터({ type, content }). Yjs 업데이트 메시지 등을 포함합니다.
    */
   @SubscribeMessage('message')
   async handleMessage(
     @ConnectedSocket() client: ClientSocket,
-    @MessageBody() payload: any,
+    @MessageBody() payload: { type: string; content: string },
   ) {
     const fileId = client.fileId;
-    if (!fileId) return;
 
+    if (!fileId || !this.rooms.has(fileId)) return;
     const fileIdNum = parseInt(fileId, 10);
-    const room = this.rooms.get(fileId);
-    if (!room) return;
+    const room = this.rooms.get(fileId)!;
 
-    // TODO: update, awareness 등 로직 구현
+    const { type, content } = payload;
 
-    // update
-    if (payload.type === 'update') {
-      const update = this.fromBase64(payload.data);
+    if (type === 'update') {
+      try {
+        const update = this.fromBase64(content);
 
-      // NoteDocumentManager에 적용 (단일 진실 공급원)
-      // 인스턴스가 같기 때문에 room.doc도 자동으로 업데이트
-      this.noteDocumentManager.applyUpdate(fileIdNum, update);
+        // NoteDocumentManager에 적용 (단일 진실 공급원)
+        // 인스턴스가 같기 때문에 room.doc도 자동으로 업데이트
+        this.noteDocumentManager.applyUpdate(fileIdNum, update);
 
-      // 브로드캐스트
-      room.clients.forEach((otherClient) => {
-        if (otherClient !== client) {
-          this.sendToClient(otherClient, {
-            type: 'update',
-            data: payload.data,
-          });
+        // room의 다른 클라이언트에게 브로드캐스트
+        room.clients.forEach((otherClient) => {
+          if (
+            otherClient !== client &&
+            otherClient.readyState === WebSocket.OPEN
+          ) {
+            this.sendToClient(otherClient, {
+              type: 'update',
+              data: content,
+            });
+          }
+        });
+
+        // 스냅샷 체크
+        if (this.noteDocumentManager.shouldCreateSnapshot(fileIdNum)) {
+          await this.notesService.createSnapshot(fileIdNum);
         }
-      });
-
-      // 스냅샷 체크
-      if (this.noteDocumentManager.shouldCreateSnapshot(fileIdNum)) {
-        await this.notesService.createSnapshot(fileIdNum);
+      } catch (e) {
+        console.error('Update 처리 중 에러:', e);
       }
     }
   }
