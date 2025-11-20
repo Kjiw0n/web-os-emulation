@@ -8,7 +8,7 @@ import { SnapshotService } from './note-snapshot.service';
 import { CollaborationGateway } from 'src/gateway/collaboration.gateway';
 
 export interface CreateNotesResponse {
-  fileId: number;
+  id: number;
   name: string;
   content: string;
 }
@@ -58,7 +58,7 @@ export class NotesService {
     });
 
     return {
-      fileId: savedFileSystem.id,
+      id: savedFileSystem.id,
       name: savedFileSystem.name,
       content: content,
     };
