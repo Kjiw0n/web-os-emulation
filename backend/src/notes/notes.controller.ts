@@ -20,13 +20,13 @@ export class NotesController {
     return this.notesService.create(createNotesDto);
   }
 
-  @Get('files/')
-  async getFile(@Query('id') id: string): Promise<string> {
-    return this.notesService.getFile(id);
-  }
+  // @Get('/')
+  // async getFile(@Query('id') id: string): Promise<string> {
+  //   return this.notesService.getFile(id);
+  // }
 
-  @Get('list')
-  async findAllNotes() {
+  @Get()
+  async findAllNotes(){
     return this.notesService.findAllNotes();
   }
 }
