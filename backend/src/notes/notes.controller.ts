@@ -1,4 +1,11 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Get,
+} from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNotesDto } from './dto/notes.dto';
 
@@ -11,9 +18,9 @@ export class NotesController {
   async create(@Body() createNotesDto: CreateNotesDto) {
     return this.notesService.create(createNotesDto);
   }
-  
+
   @Get()
-  async findAllNotes(){
+  async findAllNotes() {
     return this.notesService.findAllNotes();
   }
 }
