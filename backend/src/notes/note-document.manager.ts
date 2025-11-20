@@ -31,21 +31,57 @@ export class NoteDocumentManager implements OnModuleInit {
       notesDir.id,
     );
 
+    console.log(`[Snapshot Load] 총 ${children.length}개의 노트 발견`);
+
     // 각 파일의 contentUrl에서 스냅샷 로드
     for (const file of children) {
       const key = this.getOjbStorageKey(file);
-      if (!key) continue;
+      // 1. 키가 제대로 뽑혔는지 확인
+      if (!key) {
+        console.warn(
+          // 키가 없는 건 데이터 정합성 문제일 수 있으므로 Warn
+          `[Skip] fileId: ${file.id} - contentUrl이 없거나 키 추출 실패`,
+        );
+        continue;
+      }
 
       try {
+        // 2. 다운로드 시도 로그
+        console.log(`[Downloading] fileId: ${file.id}, Key: ${key}`);
+
         const snapshotData = await this.s3Service.downloadBinary(key);
 
-        // Uint8Array를 Y.Doc으로 변환
-        const ydoc = new Y.Doc();
-        Y.applyUpdate(ydoc, snapshotData);
+        // 3. 데이터 타입 및 크기 확인
+        console.log(
+          `[Downloaded] fileId: ${file.id}, Size: ${snapshotData.byteLength} bytes, Type: ${snapshotData.constructor.name}`,
+        );
 
-        this.documents.set(file.id, ydoc);
+        // 빈 파일(0 bytes)은 Yjs update 형식이 아니므로 apply하면 에러 발생
+        // -> 데이터가 있을 때만 적용하고, 없으면 그냥 빈 문서(new Y.Doc) 생성
+        if (snapshotData.byteLength > 0) {
+          const ydoc = new Y.Doc();
+          Y.applyUpdate(ydoc, snapshotData);
+          this.documents.set(file.id, ydoc);
+
+          console.log(
+            `[Yjs] 로드 성공: fileId ${file.id} (${snapshotData.byteLength} bytes)`,
+          );
+        } else {
+          this.documents.set(file.id, new Y.Doc());
+          console.log(
+            `[Yjs] 빈 파일(0 bytes) - 빈 문서로 초기화: fileId ${file.id}`,
+          );
+        }
       } catch (error) {
-        console.error(`Failed to load snapshot for file ${file.id}:`, error);
+        // 4. 에러의 상세 내용(Stack Trace, Code) 출력
+        console.error(`[Error] Failed to load snapshot for file ${file.id}`);
+        console.error(`  - Key: ${key}`);
+
+        // AWS SDK 에러라면 code가 있습니다 (ex: NoSuchKey, AccessDenied)
+        if (error && typeof error === 'object' && 'code' in error) {
+          console.error(`  - AWS Error Code: ${error.code}`);
+        }
+        console.error(`  - Full Error:`, error);
       }
     }
   }
