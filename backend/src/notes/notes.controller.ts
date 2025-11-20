@@ -11,4 +11,9 @@ export class NotesController {
   async create(@Body() createNotesDto: CreateNotesDto) {
     return this.notesService.create(createNotesDto);
   }
+  
+  @Get()
+  async findAllNotes(){
+    return this.notesService.findAllNotes();
+  }
 }
