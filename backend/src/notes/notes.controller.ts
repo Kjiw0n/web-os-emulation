@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpCode,
-  HttpStatus,
-  Get,
-  Query,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNotesDto } from './dto/notes.dto';
 
@@ -19,12 +11,7 @@ export class NotesController {
   async create(@Body() createNotesDto: CreateNotesDto) {
     return this.notesService.create(createNotesDto);
   }
-
-  // @Get('/')
-  // async getFile(@Query('id') id: string): Promise<string> {
-  //   return this.notesService.getFile(id);
-  // }
-
+  
   @Get()
   async findAllNotes(){
     return this.notesService.findAllNotes();
