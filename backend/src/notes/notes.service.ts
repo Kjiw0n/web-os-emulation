@@ -5,7 +5,7 @@ import { FileSystemRepository } from '../file-system/file-system.repository';
 import { FileSystem } from '../file-system/entities/file-system.entity';
 import { FileType } from '../file-system/types/file-type.enum';
 
-interface CreateNotesResponse {
+export interface CreateNotesResponse {
   fileId: number;
   name: string;
   content: string;
@@ -87,11 +87,12 @@ export class NotesService {
   async findAllNotes() {
     const NOTE_DIR_ID = 5;
 
-    const files = await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
+    const files =
+      await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
     return files.map((file) => ({
       id: file.id,
       name: file.name,
-      updatedAt: file.updatedAt
+      updatedAt: file.updatedAt,
     }));
   }
 }
