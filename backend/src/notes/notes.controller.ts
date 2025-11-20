@@ -5,6 +5,8 @@ import {
   HttpCode,
   HttpStatus,
   Get,
+  Delete,
+  Query,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNotesDto } from './dto/notes.dto';
@@ -22,5 +24,10 @@ export class NotesController {
   @Get()
   async findAllNotes() {
     return this.notesService.findAllNotes();
+  }
+
+  @Delete()
+  async deleteNotes(@Query('fileId') fileId: number) {
+    return this.notesService.deleteNotes(fileId);
   }
 }
