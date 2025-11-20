@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { FileSystem } from 'src/file-system/entities';
 import { FileSystemRepository } from 'src/file-system/file-system.repository';
 import { S3Service } from 'src/s3/s3.service';
@@ -6,6 +6,7 @@ import * as Y from 'yjs';
 
 @Injectable()
 export class NoteDocumentManager implements OnModuleInit {
+  private readonly logger = new Logger(NoteDocumentManager.name);
   private documents = new Map<number, Y.Doc>();
   private updateCounts = new Map<number, number>();
   private readonly SNAPSHOT_THRESHOLD = 100;
@@ -31,59 +32,54 @@ export class NoteDocumentManager implements OnModuleInit {
       notesDir.id,
     );
 
-    console.log(`[Snapshot Load] 총 ${children.length}개의 노트 발견`);
+    this.logger.log(
+      `[Snapshot Load] 시작 - 총 ${children.length}개의 노트 발견`,
+    );
+
+    // 로깅 용 카운터
+    let successCount = 0;
+    let emptyCount = 0;
+    let failCount = 0;
 
     // 각 파일의 contentUrl에서 스냅샷 로드
     for (const file of children) {
       const key = this.getOjbStorageKey(file);
-      // 1. 키가 제대로 뽑혔는지 확인
+
       if (!key) {
-        console.warn(
-          // 키가 없는 건 데이터 정합성 문제일 수 있으므로 Warn
-          `[Skip] fileId: ${file.id} - contentUrl이 없거나 키 추출 실패`,
-        );
+        this.logger.warn(`[Skip] fileId: ${file.id} - 키 추출 실패`);
+        failCount++;
         continue;
       }
 
       try {
-        // 2. 다운로드 시도 로그
-        console.log(`[Downloading] fileId: ${file.id}, Key: ${key}`);
-
         const snapshotData = await this.s3Service.downloadBinary(key);
 
-        // 3. 데이터 타입 및 크기 확인
-        console.log(
-          `[Downloaded] fileId: ${file.id}, Size: ${snapshotData.byteLength} bytes, Type: ${snapshotData.constructor.name}`,
-        );
-
         // 빈 파일(0 bytes)은 Yjs update 형식이 아니므로 apply하면 에러 발생
-        // -> 데이터가 있을 때만 적용하고, 없으면 그냥 빈 문서(new Y.Doc) 생성
+        // -> 데이터가 있을 때만 적용하고, 없으면 그냥 빈 문서(new Y.Doc)를 생성합니다.
         if (snapshotData.byteLength > 0) {
           const ydoc = new Y.Doc();
           Y.applyUpdate(ydoc, snapshotData);
           this.documents.set(file.id, ydoc);
-
-          console.log(
-            `[Yjs] 로드 성공: fileId ${file.id} (${snapshotData.byteLength} bytes)`,
-          );
+          successCount++;
         } else {
           this.documents.set(file.id, new Y.Doc());
-          console.log(
-            `[Yjs] 빈 파일(0 bytes) - 빈 문서로 초기화: fileId ${file.id}`,
-          );
+          this.logger.warn(`[Empty] 빈 파일 초기화 - fileId: ${file.id}`);
+          emptyCount++;
         }
       } catch (error) {
-        // 4. 에러의 상세 내용(Stack Trace, Code) 출력
-        console.error(`[Error] Failed to load snapshot for file ${file.id}`);
-        console.error(`  - Key: ${key}`);
+        failCount++;
 
-        // AWS SDK 에러라면 code가 있습니다 (ex: NoSuchKey, AccessDenied)
-        if (error && typeof error === 'object' && 'code' in error) {
-          console.error(`  - AWS Error Code: ${error.code}`);
-        }
-        console.error(`  - Full Error:`, error);
+        const awsCode = error.code ? ` (${error.code})` : '';
+        this.logger.error(
+          `[Fail] fileId: ${file.id} 로드 실패${awsCode} - ${error.message}`,
+          error.stack,
+        );
       }
     }
+
+    this.logger.log(
+      `[Snapshot Load] 완료 - 성공: ${successCount}, 빈 파일: ${emptyCount}, 실패: ${failCount}`,
+    );
   }
 
   private getOjbStorageKey(file: FileSystem): string | null {
