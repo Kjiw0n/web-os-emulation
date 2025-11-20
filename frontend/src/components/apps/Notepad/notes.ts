@@ -10,7 +10,6 @@ export interface CreateNoteRequest {
 export interface NoteResponse {
   id: number;
   name: string;
-  content: string;
   updatedAt?: string;
 }
 
@@ -20,11 +19,6 @@ export const createNote = async (payload: CreateNoteRequest) => {
 };
 
 export const getNoteList = async (): Promise<NoteResponse[]> => {
-  const res = await api.get<NoteResponse[]>("/notes/list");
+  const res = await api.get<NoteResponse[]>("/notes");
   return res.data
-};
-
-export const getNote = async (id: number): Promise<NoteResponse> => {
-  const res = await api.get<NoteResponse>(`/notes/files/?id=${id}`);
-  return res.data;
 };
