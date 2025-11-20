@@ -87,11 +87,12 @@ export class NotesService {
   async findAllNotes() {
     const NOTE_DIR_ID = 5;
 
-    const files = await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
+    const files =
+      await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
     return files.map((file) => ({
       id: file.id,
       name: file.name,
-      updatedAt: file.updatedAt
+      updatedAt: file.updatedAt,
     }));
   }
 }
