@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface WindowProps {
   title: string;
@@ -25,28 +25,60 @@ export function Window({
 }: WindowProps) {
   const [position, setPosition] = useState({ x, y });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const dragStateRef = useRef({ x: 0, y: 0 });
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStart({
+    dragStateRef.current = {
       x: e.clientX - position.x,
       y: e.clientY - position.y,
-    });
+    };
+    setIsDragging(true);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // 부모 컨테이너 (DesktopPage)의 실제 높이 계산
+      const topBar = document.querySelector("[data-testid='topbar']");
+      const dock = document.querySelector("[data-testid='dock']");
+
+      const TOOLBAR_HEIGHT = topBar!.clientHeight;
+      const DOCK_HEIGHT = dock!.clientHeight;
+
+      let newX = e.clientX - dragStateRef.current.x;
+      let newY = e.clientY - dragStateRef.current.y;
+
+      // 좌측 경계 제약
+      newX = Math.max(0, newX);
+
+      // 우측 경계 제약
+      newX = Math.min(newX, window.innerWidth - width);
+
+      // 상단 경계 제약 (툴바 아래)
+      newY = Math.max(TOOLBAR_HEIGHT, newY);
+
+      // 하단 경계 제약 (독 위쪽)
+      newY = Math.min(newY, window.innerHeight - DOCK_HEIGHT - height);
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
+        x: newX,
+        y: newY,
       });
-    }
-  };
+    };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, [isDragging, width, height]);
 
   return (
     <div
@@ -59,8 +91,6 @@ export function Window({
         width: `${width}px`,
         height: `${height}px`,
       }}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
     >
       {/* 타이틀바 */}
       <div
@@ -74,26 +104,24 @@ export function Window({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <button
-              className="h-3 w-3 rounded-full bg-red-500 transition-colors hover:bg-red-600"
+              className="bg-red-500 hover:bg-red-600 rounded-full w-3 h-3 transition-colors"
               onClick={onClose}
             />
             <button
-              className="h-3 w-3 rounded-full bg-yellow-500 transition-colors hover:bg-yellow-600"
+              className="bg-yellow-500 hover:bg-yellow-600 rounded-full w-3 h-3 transition-colors"
               onClick={onMinimize}
             />
-            <button className="h-3 w-3 rounded-full bg-green-500 transition-colors hover:bg-green-600" />
+            <button className="bg-green-500 hover:bg-green-600 rounded-full w-3 h-3 transition-colors" />
           </div>
         </div>
-        <span className="absolute left-1/2 -translate-x-1/2 text-sm">
+        <span className="left-1/2 absolute text-sm -translate-x-1/2">
           {title}
         </span>
         <div className="w-16" />
       </div>
 
       {/* 콘텐츠 */}
-      <div className="flex-1 h-full overflow-hidden">
-        {children}
-      </div>
+      <div className="flex-1 h-full overflow-hidden">{children}</div>
     </div>
   );
 }
