@@ -3,7 +3,6 @@ import clsx from "clsx";
 interface Note {
   id: number;
   name: string;
-  content: string;
   updatedAt?: string;
 }
 
@@ -30,7 +29,6 @@ export function NoteEditor({ note, onChange, isDarkMode }: NoteEditorProps) {
         className={`flex-1 w-full p-2 outline-none resize-none ${
           isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
         }`}
-        value={note.content}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>

@@ -5,7 +5,6 @@ import Plus from "@/assets/Icons/Plus.svg";
 interface Note {
   id: number;
   name: string;
-  content: string;
   updatedAt?: string;
 }
 

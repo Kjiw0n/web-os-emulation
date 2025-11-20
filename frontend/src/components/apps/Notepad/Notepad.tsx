@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { NoteList } from "./NotePadList";
 import { NoteEditor } from "./NotePadEditor";
-import { createNote, getNoteList, getNote } from "./notes";
+import { createNote, getNoteList } from "./notes";
 
 interface Note {
   id: number;
   name: string;
-  content: string;
   updatedAt?: string;
 }
 
@@ -33,19 +32,6 @@ export function Notepad({ isDarkMode }: NotepadProps) {
 
   const selectedNote = notes.find((m) => m.id === selectedNoteId);
 
-  const handleSelectNote = async (id: number) => {
-    setSelectedNoteId(id);
-    const note = notes.find((n) => n.id === id);
-    if (note && !note.content) {
-      try {
-        const data = await getNote(id);
-        setNotes(notes.map((m) => (m.id === id ? { ...m, content: data.content } : m)));
-      } catch (error) {
-        console.error("노트 내용 로딩 실패:", error);
-      }
-    }
-  };
-
   const addNote = async () => {
     try {
       const newNoteData = await createNote({
@@ -56,7 +42,6 @@ export function Notepad({ isDarkMode }: NotepadProps) {
       setNotes([{
         id: newNoteData.id,      
         name: newNoteData.name,
-        content: "",
         updatedAt: newNoteData.updatedAt
       }, ...notes]);
 
@@ -87,7 +72,7 @@ export function Notepad({ isDarkMode }: NotepadProps) {
       <NoteList
         notes={notes}
         selectedNoteId={selectedNoteId}
-        setSelectedNoteId={handleSelectNote}
+        setSelectedNoteId={(id: number) => setSelectedNoteId(id)}
         addNote={addNote}
         deleteNote={deleteNote}
         isDarkMode={isDarkMode}
