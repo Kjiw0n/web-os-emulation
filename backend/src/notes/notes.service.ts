@@ -74,10 +74,17 @@ export class NotesService {
 
   /**
    * 모든 노트 파일의 목록을 조회합니다.
-   * @returns {Promise<FileSystem[]>} 노트 파일 목록
+   * @returns 노트 파일 목록
    * @description 파일 시스템 레포지토리에서 모든 파일을 조회합니다.
    */
-  async findAllNotes(): Promise<FileSystem[]> {
-    return this.fileSystemRepository.findAllTextFiles();
+  async findAllNotes() {
+    const NOTE_DIR_ID = 5;
+
+    const files = await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
+    return files.map((file) => ({
+      id: file.id,
+      name: file.name,
+      updatedAt: file.updatedAt
+    }));
   }
 }
