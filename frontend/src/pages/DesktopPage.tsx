@@ -77,8 +77,8 @@ const DesktopPage = () => {
   const minimizeWindow = (id: number) => {
     setWindows((prev) =>
       prev.map((window) =>
-        window.id === id ? { ...window, isMinimized: true } : window
-      )
+        window.id === id ? { ...window, isMinimized: true } : window,
+      ),
     );
   };
 
@@ -86,8 +86,8 @@ const DesktopPage = () => {
   const restoreWindow = (id: number) => {
     setWindows((prev) =>
       prev.map((window) =>
-        window.id === id ? { ...window, isMinimized: false } : window
-      )
+        window.id === id ? { ...window, isMinimized: false } : window,
+      ),
     );
   };
 
@@ -96,10 +96,11 @@ const DesktopPage = () => {
 
   return (
     <div
-      className={`flex h-screen w-screen flex-col ${ isDarkMode ? "bg-gray-900" : "bg-gray-200"}`}
+      className={`flex h-screen w-screen flex-col ${isDarkMode ? "bg-gray-900" : "bg-gray-200"}`}
     >
       {/* 상단 툴바 */}
       <div
+        data-testid="topbar"
         className={`flex h-8 items-center justify-between border-b px-4 text-sm backdrop-blur-sm ${
           isDarkMode
             ? "border-gray-700 bg-gray-800/80 text-white"
@@ -118,9 +119,9 @@ const DesktopPage = () => {
             title={isDarkMode ? "라이트 모드" : "다크 모드"}
           >
             {isDarkMode ? (
-              <Icn.LightMode className="h-4 w-4" />
+              <Icn.LightMode className="w-4 h-4" />
             ) : (
-              <Icn.DarkMode className="h-4 w-4" />
+              <Icn.DarkMode className="w-4 h-4" />
             )}
           </button>
           <button
@@ -130,7 +131,7 @@ const DesktopPage = () => {
             }`}
             title="재시작"
           >
-            <Icn.Restart className="h-4 w-4" />
+            <Icn.Restart className="w-4 h-4" />
           </button>
           <button
             onClick={handleShutdown}
@@ -139,7 +140,7 @@ const DesktopPage = () => {
             }`}
             title="종료"
           >
-            <Icn.Power className="h-4 w-4" />
+            <Icn.Power className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -157,12 +158,22 @@ const DesktopPage = () => {
               }`}
               onDoubleClick={() => OpenWindow(program as keyof typeof appMap)}
             >
-              <div className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
-                isDarkMode ? "border-gray-600 bg-gray-800" : "border-gray-400 bg-white"
-              }`}>
-                <AppIcon className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`} />
+              <div
+                className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 ${
+                  isDarkMode
+                    ? "border-gray-600 bg-gray-800"
+                    : "border-gray-400 bg-white"
+                }`}
+              >
+                <AppIcon
+                  className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                />
               </div>
-              <span className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}>{program}</span>
+              <span
+                className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}
+              >
+                {program}
+              </span>
             </button>
           );
         })}
@@ -185,18 +196,28 @@ const DesktopPage = () => {
             {(() => {
               const AppComponent = appMap[win.program];
               return AppComponent ? (
-                <AppComponent isDarkMode={isDarkMode} processId={win.processId} />
+                <AppComponent
+                  isDarkMode={isDarkMode}
+                  processId={win.processId}
+                />
               ) : null;
             })()}
           </Window>
-        ) : null
+        ) : null,
       )}
 
       {/* 하단 독 */}
-      <div className="flex h-16 items-center justify-center pb-2">
-        <div className={`rounded-2xl border px-4 py-2 shadow-2xl backdrop-blur-md ${
-          isDarkMode ? "border-gray-700/50 bg-gray-800/60" : "border-gray-300/50 bg-white/60"
-        }`}>
+      <div
+        data-testid="dock"
+        className="flex justify-center items-center pb-2 h-16"
+      >
+        <div
+          className={`rounded-2xl border px-4 py-2 shadow-2xl backdrop-blur-md ${
+            isDarkMode
+              ? "border-gray-700/50 bg-gray-800/60"
+              : "border-gray-300/50 bg-white/60"
+          }`}
+        >
           <div className="flex items-center gap-2">
             {windows.map((win) => {
               const AppIcon = appIconMap[win.program];
@@ -204,15 +225,21 @@ const DesktopPage = () => {
                 <button
                   key={win.id}
                   className={`relative rounded-lg p-3 transition-colors ${
-                    isDarkMode ? "bg-gray-700/50 hover:bg-gray-600/50" : "bg-gray-200/50 hover:bg-gray-300/50"
+                    isDarkMode
+                      ? "bg-gray-700/50 hover:bg-gray-600/50"
+                      : "bg-gray-200/50 hover:bg-gray-300/50"
                   }`}
                   onClick={() => restoreWindow(win.id)}
                 >
-                  <AppIcon className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`} />
+                  <AppIcon
+                    className={`h-8 w-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                  />
                   {!win.isMinimized && (
-                    <div className={`absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
-                      isDarkMode ? "bg-white" : "bg-gray-900"
-                    }`} />
+                    <div
+                      className={`absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
+                        isDarkMode ? "bg-white" : "bg-gray-900"
+                      }`}
+                    />
                   )}
                 </button>
               );

@@ -37,11 +37,32 @@ export function Window({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      const newPosition = {
-        x: e.clientX - dragStateRef.current.x,
-        y: e.clientY - dragStateRef.current.y,
-      };
-      setPosition(newPosition);
+      // 부모 컨테이너 (DesktopPage)의 실제 높이 계산
+      const topBar = document.querySelector("[data-testid='topbar']");
+      const dock = document.querySelector("[data-testid='dock']");
+
+      const TOOLBAR_HEIGHT = topBar?.clientHeight ?? 32;
+      const DOCK_HEIGHT = dock?.clientHeight ?? 80; // h-16 + pb-2
+
+      let newX = e.clientX - dragStateRef.current.x;
+      let newY = e.clientY - dragStateRef.current.y;
+
+      // 좌측 경계 제약
+      newX = Math.max(0, newX);
+
+      // 우측 경계 제약
+      newX = Math.min(newX, window.innerWidth - width);
+
+      // 상단 경계 제약 (툴바 아래)
+      newY = Math.max(TOOLBAR_HEIGHT, newY);
+
+      // 하단 경계 제약 (독 위쪽)
+      newY = Math.min(newY, window.innerHeight - DOCK_HEIGHT - height);
+
+      setPosition({
+        x: newX,
+        y: newY,
+      });
     };
 
     const handleMouseUp = () => {
@@ -57,7 +78,7 @@ export function Window({
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, width, height]);
 
   return (
     <div
