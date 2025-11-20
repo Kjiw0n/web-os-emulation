@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NoteList } from "./NotePadList";
 import { NoteEditor } from "./NotePadEditor";
 import { createNote, getNoteList, deleteNoteApi, type Note } from "./notes";
+import { useNoteListSync } from "./hooks/useNoteListSync";
 
 interface NotepadProps {
   isDarkMode: boolean;
@@ -24,26 +25,30 @@ export function Notepad({ isDarkMode }: NotepadProps) {
     loadNotes();
   }, []);
 
+  // 웹소켓 이벤트 핸들러 (다른 창에서 생성/삭제 시 호출됨)
+  const handleRemoteNoteCreated = useCallback((newNote: Note) => {
+    setNotes((prev) => {
+      if (prev.some((n) => n.id === newNote.id)) return prev; // 중복 방지
+      return [newNote, ...prev];
+    });
+  }, []);
+
+  const handleRemoteNoteDeleted = useCallback((deletedId: number) => {
+    setNotes((prev) => prev.filter((n) => n.id !== deletedId));
+    setSelectedNoteId((curr) => (curr === deletedId ? null : curr));
+  }, []);
+
+  useNoteListSync({
+    onNoteCreated: handleRemoteNoteCreated,
+    onNoteDeleted: handleRemoteNoteDeleted,
+  });
+
   const selectedNote = notes.find((m) => m.id === selectedNoteId);
 
   const addNote = async () => {
     try {
-      const newNoteData = await createNote({
-        name: "새 파일",
-      });
-
-      setNotes((prevNotes) => [
-        {
-          id: newNoteData.id,
-          name: newNoteData.name,
-          updatedAt: newNoteData.updatedAt,
-        },
-        ...prevNotes,
-      ]);
-
-      const updatedNotes = await getNoteList();
-      setNotes(updatedNotes);
-
+      const newNoteData = await createNote({ name: "새 파일" });
+      // setNotes는 handleRemoteNoteCreated에서 실행
       setSelectedNoteId(newNoteData.id);
     } catch (error) {
       console.error("메모 생성 실패:", error);
