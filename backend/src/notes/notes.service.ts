@@ -19,7 +19,7 @@ export class NotesService {
    * @description S3에 파일 내용을 저장하고, 파일 시스템에 메타데이터를 저장합니다.
    */
   async create(createNotesDto: CreateNotesDto) {
-    const fileName = createNotesDto.title;
+    const fileName = createNotesDto.name;
 
     const content = createNotesDto.content || '';
 
@@ -40,7 +40,7 @@ export class NotesService {
 
     return {
       fileId: savedFileSystem.id,
-      title: savedFileSystem.name,
+      name: savedFileSystem.name,
       content: content,
     };
   }
@@ -68,8 +68,23 @@ export class NotesService {
     }
 
     const url = new URL(fileSystem.contentUrl);
-    const key = url.pathname.slice(1); // 앞의 '/' 제거
-
+    const key = decodeURIComponent(url.pathname.slice(1));
     return await this.s3Service.downloadFile(key);
+  }
+
+  /**
+   * 모든 노트 파일의 목록을 조회합니다.
+   * @returns 노트 파일 목록
+   * @description 파일 시스템 레포지토리에서 모든 파일을 조회합니다.
+   */
+  async findAllNotes() {
+    const NOTE_DIR_ID = 5;
+
+    const files = await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
+    return files.map((file) => ({
+      id: file.id,
+      name: file.name,
+      updatedAt: file.updatedAt
+    }));
   }
 }

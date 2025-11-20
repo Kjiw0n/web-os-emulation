@@ -4,8 +4,8 @@ import Plus from "@/assets/Icons/Plus.svg";
 
 interface Note {
   id: number;
-  title: string;
-  content: string;
+  name: string;
+  updatedAt?: string;
 }
 
 interface NoteListProps {
@@ -87,7 +87,12 @@ export function NoteList({
               onClick={() => handleSelectNote(note.id)}
               className={getNoteItemClasses(note.id)}
             >
-              {note.title}
+            <div className="font-medium">{note.name}</div>
+            {note.updatedAt && (
+              <div className="text-xs text-gray-400">
+                {new Date(note.updatedAt).toLocaleString()}
+              </div>
+            )}
             </div>
           ))
         ) : (

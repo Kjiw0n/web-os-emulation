@@ -59,6 +59,7 @@ export class FileSystemRepository {
       order: {
         type: 'DESC',
         name: 'ASC',
+        updatedAt: 'DESC'
       },
     });
   }
