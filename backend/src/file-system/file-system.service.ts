@@ -11,7 +11,6 @@ export class FileSystemService {
     private readonly fileSystemRepository: FileSystemRepository,
     private readonly s3Service: S3Service,
     private readonly processesRepo: ProcessesRepository,
-
   ) {}
 
   /**
@@ -115,23 +114,28 @@ export class FileSystemService {
     } else {
       // 상대 경로
       const proc = await this.processesRepo.findOne(processId);
-      if (!proc) throw new Error(`프로세스 ID ${processId}를 찾을 수 없습니다.`);
+      if (!proc)
+        throw new Error(`프로세스 ID ${processId}를 찾을 수 없습니다.`);
 
       const segments = targetPath.split('/').filter(Boolean);
       const fileName = segments.pop()!;
       const relativeDir = segments.join('/');
       const targetDirId = await this.resolveRelativePath(
         proc.currentDirectoryId,
-        relativeDir || '.'
+        relativeDir || '.',
       );
       const directoryPath = await this.buildPath(targetDirId);
-      fileNode = await this.findNodeByAbsolutePath(`${directoryPath}/${fileName}`);
+      fileNode = await this.findNodeByAbsolutePath(
+        `${directoryPath}/${fileName}`,
+      );
     }
 
     if (!fileNode) throw new Error(`'${targetPath}'를 찾을 수 없습니다.`);
-    if (fileNode.type !== FileType.FILE) throw new Error(`'${fileNode.name}'는 파일이 아닙니다.`);
+    if (fileNode.type !== FileType.FILE)
+      throw new Error(`'${fileNode.name}'는 파일이 아닙니다.`);
 
-    if (!fileNode.contentUrl) throw new Error(`'${fileNode.name}'에 내용이 없습니다.`);
+    if (!fileNode.contentUrl)
+      throw new Error(`'${fileNode.name}'에 내용이 없습니다.`);
 
     // S3에서 다운로드
     // contentUrl은 "https://{bucket}.kr.object.ncloudstorage.com/{key}" 형식이므로 key만 추출
