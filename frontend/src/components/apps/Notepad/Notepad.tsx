@@ -74,6 +74,7 @@ export function Notepad({ isDarkMode }: NotepadProps) {
           <NoteEditor
             key={selectedNoteId}
             fileId={selectedNoteId!!}
+            updatedAt={selectedNote.updatedAt}
             isDarkMode={isDarkMode}
           />
         ) : (
