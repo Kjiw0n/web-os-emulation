@@ -4,6 +4,7 @@ import { S3Service } from '../s3/s3.service';
 import { FileSystemRepository } from '../file-system/file-system.repository';
 import { FileSystem } from '../file-system/entities/file-system.entity';
 import { FileType } from '../file-system/types/file-type.enum';
+import { SnapshotService } from './note-snapshot.service';
 
 interface CreateNotesResponse {
   fileId: number;
@@ -16,6 +17,7 @@ export class NotesService {
   constructor(
     private readonly s3Service: S3Service,
     private readonly fileSystemRepository: FileSystemRepository,
+    private readonly snapshotService: SnapshotService,
     @Inject('NOTES_DIR_ID') private readonly notesDirId: number,
   ) {}
 
@@ -87,11 +89,16 @@ export class NotesService {
   async findAllNotes() {
     const NOTE_DIR_ID = 5;
 
-    const files = await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
+    const files =
+      await this.fileSystemRepository.findChildrenByParentId(NOTE_DIR_ID);
     return files.map((file) => ({
       id: file.id,
       name: file.name,
-      updatedAt: file.updatedAt
+      updatedAt: file.updatedAt,
     }));
+  }
+
+  async createSnapshot(fileId: number): Promise<void> {
+    return this.snapshotService.createSnapshot(fileId);
   }
 }
