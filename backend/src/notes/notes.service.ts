@@ -1,24 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CreateNotesDto } from './dto/notes.dto';
 import { S3Service } from '../s3/s3.service';
 import { FileSystemRepository } from '../file-system/file-system.repository';
 import { FileSystem } from '../file-system/entities/file-system.entity';
 import { FileType } from '../file-system/types/file-type.enum';
 
+interface CreateNotesResponse {
+  fileId: number;
+  title: string;
+  content: string;
+}
+
 @Injectable()
 export class NotesService {
   constructor(
     private readonly s3Service: S3Service,
     private readonly fileSystemRepository: FileSystemRepository,
+    @Inject('NOTES_DIR_ID') private readonly notesDirId: number,
   ) {}
 
   /**
    * 새로운 노트 파일을 생성합니다.
    * @param {CreateNotesDto} createNotesDto - 생성할 노트의 정보 (제목, 내용)
-   * @returns {Promise<void>}
+   * @returns {Promise<CreateNotesResponse>} 생성된 파일의 ID, 제목, 내용
    * @description S3에 파일 내용을 저장하고, 파일 시스템에 메타데이터를 저장합니다.
    */
-  async create(createNotesDto: CreateNotesDto) {
+  async create(createNotesDto: CreateNotesDto): Promise<CreateNotesResponse> {
     const fileName = createNotesDto.title;
 
     const content = createNotesDto.content || '';
@@ -33,7 +40,7 @@ export class NotesService {
     fileSystem.fileExtension = 'txt';
     fileSystem.contentUrl = contentUrl;
     fileSystem.size = '0';
-    fileSystem.parentId = 5;
+    fileSystem.parentId = this.notesDirId;
     fileSystem.permissions = 'rwx';
 
     const savedFileSystem = await this.fileSystemRepository.save(fileSystem);
