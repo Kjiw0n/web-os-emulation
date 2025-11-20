@@ -41,8 +41,8 @@ export function Window({
       const topBar = document.querySelector("[data-testid='topbar']");
       const dock = document.querySelector("[data-testid='dock']");
 
-      const TOOLBAR_HEIGHT = topBar?.clientHeight ?? 32;
-      const DOCK_HEIGHT = dock?.clientHeight ?? 80; // h-16 + pb-2
+      const TOOLBAR_HEIGHT = topBar!.clientHeight;
+      const DOCK_HEIGHT = dock!.clientHeight;
 
       let newX = e.clientX - dragStateRef.current.x;
       let newY = e.clientY - dragStateRef.current.y;
