@@ -1,3 +1,4 @@
+import { NoteDocumentManager } from './../notes/note-document.manager';
 import {
   ConnectedSocket,
   MessageBody,
@@ -28,7 +29,10 @@ interface Room {
 export class CollaborationGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private readonly notesService: NotesService) {}
+  constructor(
+    private readonly notesService: NotesService,
+    private readonly noteDocumentManager: NoteDocumentManager,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -57,19 +61,13 @@ export class CollaborationGateway
 
     // 클라이언트 객체에 fileId 저장 (나중에 메시지 보낼 때 어떤 방인지 알기 위함)
     client.fileId = fileId;
+    const fileIdNum = parseInt(fileId, 10);
+
+    const doc = this.noteDocumentManager.getOrCreate(fileIdNum);
 
     // Room이 없을 경우 -> 생성 및 초기화
     if (!this.rooms.has(fileId)) {
       console.log(`[Room 생성] fileId: ${fileId}`);
-      const doc = new Y.Doc();
-
-      try {
-        // DB에서 초기 콘텐츠 조회
-        const fileContent = await this.notesService.getFile(fileId);
-        doc.getText('content').insert(0, String(fileContent));
-      } catch (err) {
-        if (err instanceof Error) console.error(`DB 로딩 실패: ${fileId}`, err);
-      }
 
       this.rooms.set(fileId, {
         doc,
@@ -134,17 +132,42 @@ export class CollaborationGateway
    * @param payload - 클라이언트가 전송한 데이터. Yjs 업데이트 메시지 등을 포함합니다.
    */
   @SubscribeMessage('message')
-  handleMessage(
+  async handleMessage(
     @ConnectedSocket() client: ClientSocket,
     @MessageBody() payload: any,
   ) {
     const fileId = client.fileId;
-    if (fileId) {
-      const room = this.rooms.get(fileId);
-      if (!room) return;
-    }
+    if (!fileId) return;
+
+    const fileIdNum = parseInt(fileId, 10);
+    const room = this.rooms.get(fileId);
+    if (!room) return;
 
     // TODO: update, awareness 등 로직 구현
+
+    // update
+    if (payload.type === 'update') {
+      const update = this.fromBase64(payload.data);
+
+      // NoteDocumentManager에 적용 (단일 진실 공급원)
+      // 인스턴스가 같기 때문에 room.doc도 자동으로 업데이트
+      this.noteDocumentManager.applyUpdate(fileIdNum, update);
+
+      // 브로드캐스트
+      room.clients.forEach((otherClient) => {
+        if (otherClient !== client) {
+          this.sendToClient(otherClient, {
+            type: 'update',
+            data: payload.data,
+          });
+        }
+      });
+
+      // 스냅샷 체크
+      if (this.noteDocumentManager.shouldCreateSnapshot(fileIdNum)) {
+        await this.notesService.createSnapshot(fileIdNum);
+      }
+    }
   }
 
   private sendToClient(client: ClientSocket, message: any) {
