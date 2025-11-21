@@ -7,6 +7,7 @@ import { NotesDirIdProvider } from './providers/notes-dir-id.provider';
 import { SnapshotService } from './note-snapshot.service';
 import { NoteDocumentManager } from './note-document.manager';
 import { NoteSnapshotRepository } from './note-snapshot.repository';
+import { CollaborationGateway } from 'src/gateway/collaboration.gateway';
 
 @Module({
   imports: [S3Module, FileSystemModule],
@@ -15,6 +16,7 @@ import { NoteSnapshotRepository } from './note-snapshot.repository';
   providers: [
     NotesService,
     SnapshotService,
+    CollaborationGateway,
     NoteDocumentManager,
     NoteSnapshotRepository,
     NotesDirIdProvider,

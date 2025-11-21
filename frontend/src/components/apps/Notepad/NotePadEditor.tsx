@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useYjs } from "./useYjs";
+import { useYjs } from "./hooks/useYjs";
 import clsx from "clsx";
 
 interface NoteEditorProps {

@@ -1,13 +1,14 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { CreateNotesDto } from './dto/notes.dto';
 import { S3Service } from '../s3/s3.service';
 import { FileSystemRepository } from '../file-system/file-system.repository';
 import { FileSystem } from '../file-system/entities/file-system.entity';
 import { FileType } from '../file-system/types/file-type.enum';
 import { SnapshotService } from './note-snapshot.service';
+import { CollaborationGateway } from 'src/gateway/collaboration.gateway';
 
 export interface CreateNotesResponse {
-  fileId: number;
+  id: number;
   name: string;
   content: string;
 }
@@ -19,13 +20,15 @@ export class NotesService {
     private readonly fileSystemRepository: FileSystemRepository,
     private readonly snapshotService: SnapshotService,
     @Inject('NOTES_DIR_ID') private readonly notesDirId: number,
+    @Inject(forwardRef(() => CollaborationGateway))
+    private readonly collaborationGateway: CollaborationGateway,
   ) {}
 
   /**
    * 새로운 노트 파일을 생성합니다.
    * @param {CreateNotesDto} createNotesDto - 생성할 노트의 정보 (제목, 내용)
    * @returns {Promise<CreateNotesResponse>} 생성된 파일의 ID, 제목, 내용
-   * @description S3에 파일 내용을 저장하고, 파일 시스템에 메타데이터를 저장합니다.
+   * @description S3에 파일 내용을 저장하고, 파일 시스템에 메타데이터를 저장합니다. Lobby에 파일 생성 알림을 전송합니다.
    */
   async create(createNotesDto: CreateNotesDto): Promise<CreateNotesResponse> {
     const fileName = createNotesDto.name;
@@ -47,8 +50,15 @@ export class NotesService {
 
     const savedFileSystem = await this.fileSystemRepository.save(fileSystem);
 
+    // 로비에 "새 파일 생성됨" 알림 전송
+    this.collaborationGateway.broadcastToLobby('create', {
+      id: savedFileSystem.id,
+      name: savedFileSystem.name,
+      updatedAt: savedFileSystem.updatedAt,
+    });
+
     return {
-      fileId: savedFileSystem.id,
+      id: savedFileSystem.id,
       name: savedFileSystem.name,
       content: content,
     };
@@ -108,15 +118,16 @@ export class NotesService {
       throw new Error(`파일 ID ${id}를 찾을 수 없습니다.`);
     }
 
-    // // 1) S3에서 파일 삭제
-    // if (file.contentUrl) {
-    //   const url = new URL(file.contentUrl);
-    //   const key = decodeURIComponent(url.pathname.slice(1));
-    //   await this.s3Service.deleteFile(key);
-    // }
+    // 1) S3에서 파일 삭제
+    if (file.contentUrl) {
+      await this.s3Service.deleteFile(file.contentUrl);
+    }
 
     // 2) DB에서 메타데이터 삭제
     await this.fileSystemRepository.deleteById(id);
+
+    // 로비에 "파일 삭제됨" 알림 전송
+    this.collaborationGateway.broadcastToLobby('delete', { id });
 
     return { message: `${file.name} 삭제 완료`, id };
   }

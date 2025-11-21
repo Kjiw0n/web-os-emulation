@@ -12,9 +12,11 @@ import { Server, WebSocket } from 'ws';
 import * as Y from 'yjs';
 import { IncomingMessage } from 'http';
 import { NotesService } from 'src/notes/notes.service';
+import { forwardRef, Inject } from '@nestjs/common';
 
 interface ClientSocket extends WebSocket {
   fileId?: string;
+  isLobby?: boolean;
 }
 
 interface Room {
@@ -30,6 +32,7 @@ export class CollaborationGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
+    @Inject(forwardRef(() => NotesService))
     private readonly notesService: NotesService,
     private readonly noteDocumentManager: NoteDocumentManager,
   ) {}
@@ -38,6 +41,7 @@ export class CollaborationGateway
   server: Server;
 
   private rooms = new Map<string, Room>();
+  private lobbyClients = new Set<ClientSocket>();
 
   /**
    * 클라이언트 연결 처리
@@ -46,6 +50,8 @@ export class CollaborationGateway
    * Room이 없으면 새로 생성하고, DB에서 초기 콘텐츠를 로드합니다.
    * 연결된 클라이언트에게는 현재 문서의 전체 상태를 전송하여 동기화합니다.
    *
+   * mode=list 로 접속한 경우에는 Lobby(: 파일 리스트 업데이트 이벤트를 수신하기 위한 대기 공간)에 할당합니다.
+   *
    * @param client - 연결된 클라이언트 소켓 객체
    * @param request - 클라이언트의 연결 요청 객체. URL에서 fileId를 추출하는 데 사용됩니다.
    */
@@ -53,6 +59,15 @@ export class CollaborationGateway
     // 쿼리 파라미터로 fileId 받음
     const urlParams = new URLSearchParams(request.url?.split('?')[1]);
     const fileId = urlParams.get('fileId');
+    const mode = urlParams.get('mode');
+
+    // 리스트(Lobby) 모드 접속 처리
+    if (mode === 'list') {
+      client.isLobby = true;
+      this.lobbyClients.add(client);
+      console.log(`[Lobby 입장] 현재 로비 인원: ${this.lobbyClients.size}명`);
+      return;
+    }
 
     if (!fileId) {
       client.close();
@@ -97,12 +112,21 @@ export class CollaborationGateway
    * 클라이언트 연결 해제 처리
    *
    * 클라이언트의 연결이 끊어졌을 때 호출됩니다.
+   *
+   * Lobby 모드로 접속한 클라이언트는 연결 해제 시 Lobby 목록에서 제거합니다.
+   *
    * 해당 클라이언트를 Room에서 제거하고, Room에 더 이상 클라이언트가 없으면
    * Room을 메모리에서 삭제하여 리소스를 정리합니다.
    *
    * @param client - 연결이 해제된 클라이언트 소켓 객체
    */
   handleDisconnect(client: ClientSocket) {
+    if (client.isLobby) {
+      this.lobbyClients.delete(client);
+      console.log(`[Lobby 퇴장] 남은 인원: ${this.lobbyClients.size}명`);
+      return;
+    }
+
     const fileId = client.fileId;
     if (fileId) {
       const room = this.rooms.get(fileId);
@@ -179,6 +203,20 @@ export class CollaborationGateway
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(message));
     }
+  }
+
+  broadcastToLobby(event: 'create' | 'delete', data: any) {
+    const message = JSON.stringify({
+      type: 'note-list-update',
+      event,
+      data,
+    });
+
+    this.lobbyClients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
   }
 
   private toBase64(bytes: Uint8Array): string {

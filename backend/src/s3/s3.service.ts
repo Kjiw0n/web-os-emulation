@@ -88,16 +88,17 @@ export class S3Service implements IS3Service {
 
   extractKeyFromUrl(url: string): string {
     const urlObj = new URL(url);
-    return urlObj.pathname.substring(1); // 앞의 '/' 제거
+    const path = urlObj.pathname.substring(1); // 앞의 '/' 제거
+    return decodeURIComponent(path);
   }
 
-  // async deleteFile(url: string): Promise<void> {
-  //   const key = this.extractKeyFromUrl(url);
-  //   await this.s3.send(
-  //     new DeleteObjectCommand({
-  //       Bucket: this.bucketName,
-  //       Key: key,
-  //     }),
-  //   );
-  // }
+  async deleteFile(url: string): Promise<void> {
+    const key = this.extractKeyFromUrl(url);
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      }),
+    );
+  }
 }

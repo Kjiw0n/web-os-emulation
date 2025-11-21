@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as Y from "yjs";
 import diff from "fast-diff";
+import { WS_BASE_URL } from "@/api/axiosInstance";
 
 /**
  * Yjs와 WebSocket을 연동하여 실시간 텍스트 동기화를 처리하는 Custom Hook
@@ -25,7 +26,7 @@ export function useYjs(
     ydocRef.current = doc;
     const yText = doc.getText("content");
 
-    const ws = new WebSocket(`ws://localhost:3000/yjs?fileId=${fileId}`);
+    const ws = new WebSocket(`${WS_BASE_URL}/yjs?fileId=${fileId}`);
     wsRef.current = ws;
 
     ws.onopen = () => console.log(`[Yjs] Connected to file ${fileId}`);
