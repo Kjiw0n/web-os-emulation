@@ -92,13 +92,13 @@ export class S3Service implements IS3Service {
     return decodeURIComponent(path);
   }
 
-  // async deleteFile(url: string): Promise<void> {
-  //   const key = this.extractKeyFromUrl(url);
-  //   await this.s3.send(
-  //     new DeleteObjectCommand({
-  //       Bucket: this.bucketName,
-  //       Key: key,
-  //     }),
-  //   );
-  // }
+  async deleteFile(url: string): Promise<void> {
+    const key = this.extractKeyFromUrl(url);
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      }),
+    );
+  }
 }

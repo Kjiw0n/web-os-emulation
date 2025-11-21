@@ -118,12 +118,10 @@ export class NotesService {
       throw new Error(`파일 ID ${id}를 찾을 수 없습니다.`);
     }
 
-    // // 1) S3에서 파일 삭제
-    // if (file.contentUrl) {
-    //   const url = new URL(file.contentUrl);
-    //   const key = decodeURIComponent(url.pathname.slice(1));
-    //   await this.s3Service.deleteFile(key);
-    // }
+    // 1) S3에서 파일 삭제
+    if (file.contentUrl) {
+      await this.s3Service.deleteFile(file.contentUrl);
+    }
 
     // 2) DB에서 메타데이터 삭제
     await this.fileSystemRepository.deleteById(id);
