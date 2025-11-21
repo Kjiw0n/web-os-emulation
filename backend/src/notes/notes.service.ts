@@ -126,6 +126,9 @@ export class NotesService {
     // 2) DB에서 메타데이터 삭제
     await this.fileSystemRepository.deleteById(id);
 
+    // 로비에 "파일 삭제됨" 알림 전송
+    this.collaborationGateway.broadcastToLobby('delete', { id });
+
     return { message: `${file.name} 삭제 완료`, id };
   }
 }

@@ -26,6 +26,7 @@ export function useNoteListSync({
           if (message.event === "create") {
             onNoteCreated(message.data);
           } else if (message.event === "delete") {
+            console.log("onNoteDeleted", message.data.id);
             onNoteDeleted(message.data.id);
           }
         }

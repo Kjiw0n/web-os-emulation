@@ -60,9 +60,7 @@ export function Notepad({ isDarkMode }: NotepadProps) {
 
     try {
       await deleteNoteApi(selectedNoteId);
-
-      setNotes((prevNotes) => prevNotes.filter((m) => m.id !== selectedNoteId));
-      setSelectedNoteId(null);
+      // setNotes는 handleRemoteNoteDeleted에서 실행
     } catch (err) {
       console.error("삭제 실패", err);
     }
