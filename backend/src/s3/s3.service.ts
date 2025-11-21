@@ -3,6 +3,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
@@ -89,4 +90,14 @@ export class S3Service implements IS3Service {
     const urlObj = new URL(url);
     return urlObj.pathname.substring(1); // 앞의 '/' 제거
   }
+
+  // async deleteFile(url: string): Promise<void> {
+  //   const key = this.extractKeyFromUrl(url);
+  //   await this.s3.send(
+  //     new DeleteObjectCommand({
+  //       Bucket: this.bucketName,
+  //       Key: key,
+  //     }),
+  //   );
+  // }
 }

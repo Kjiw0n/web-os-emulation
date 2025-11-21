@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NoteList } from "./NotePadList";
 import { NoteEditor } from "./NotePadEditor";
-import { createNote, getNoteList, type Note } from "./notes";
+import { createNote, getNoteList, deleteNoteApi, type Note } from "./notes";
 
 interface NotepadProps {
   isDarkMode: boolean;
@@ -41,17 +41,26 @@ export function Notepad({ isDarkMode }: NotepadProps) {
         ...prevNotes,
       ]);
 
+      const updatedNotes = await getNoteList();
+      setNotes(updatedNotes);
+
       setSelectedNoteId(newNoteData.id);
     } catch (error) {
       console.error("메모 생성 실패:", error);
     }
   };
 
-  const deleteNote = () => {
-    if (!selectedNoteId) return;
+  const deleteNote = async () => {
+    if (selectedNoteId == null) return;
 
-    setNotes((prevNotes) => prevNotes.filter((m) => m.id !== selectedNoteId));
-    setSelectedNoteId(null);
+    try {
+      await deleteNoteApi(selectedNoteId);
+
+      setNotes((prevNotes) => prevNotes.filter((m) => m.id !== selectedNoteId));
+      setSelectedNoteId(null);
+    } catch (err) {
+      console.error("삭제 실패", err);
+    }
   };
 
   const handleSelectNote = (id: number) => setSelectedNoteId(id);

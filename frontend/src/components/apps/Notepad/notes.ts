@@ -22,3 +22,7 @@ export const getNoteList = async (): Promise<Note[]> => {
   const res = await api.get<Note[]>("/notes");
   return res.data;
 };
+
+export const deleteNoteApi = async (fileId: number): Promise<void> => {
+  await api.delete(`/notes`, { params: { fileId } });
+};
