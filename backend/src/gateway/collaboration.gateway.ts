@@ -120,7 +120,7 @@ export class CollaborationGateway
    *
    * @param client - 연결이 해제된 클라이언트 소켓 객체
    */
-  handleDisconnect(client: ClientSocket) {
+  async handleDisconnect(client: ClientSocket) {
     if (client.isLobby) {
       this.lobbyClients.delete(client);
       console.log(`[Lobby 퇴장] 남은 인원: ${this.lobbyClients.size}명`);
@@ -139,6 +139,8 @@ export class CollaborationGateway
 
         if (room.clients.size === 0) {
           console.log(`[Room 삭제] ${fileId}`);
+          const fileIdNum = parseInt(fileId, 10);
+          await this.notesService.createSnapshot(fileIdNum);
           room.doc.destroy();
           this.rooms.delete(fileId);
         }
