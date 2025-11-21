@@ -60,6 +60,7 @@ Web01 팀이 지향하는 문화에 대한 내용을 담았습니다. 개인이 
 
 <img src="https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white" />
 
+<br/>
 
 ### Frontend
 
@@ -93,6 +94,7 @@ frontend/src
 └── App.tsx
 ```
 
+<br/>
 
 #### Backend
 
@@ -168,6 +170,8 @@ backend/src
     └── s3.interface.ts
 ```
 
+<br/>
+
 ### Infra
 
 <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" /> 
@@ -176,13 +180,13 @@ backend/src
 
 ## 시스템 구성도
 
-[시스템 구성도 사진]
+<img width="2030" height="1248" alt="image" src="https://github.com/user-attachments/assets/9fdaa551-92ff-4548-b631-a6bb7fa830eb" />
 
 ---
 
 ## ERD
 
-[ERD 사진]
+<img width="1146" height="508" alt="Copy of os erd (2)" src="https://github.com/user-attachments/assets/d743c014-cbcc-40d5-b99c-8cb41eabf9df" />
 
 > 더 자세한 설명은 👉 [백엔드 시스템 설계 Wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EB%B0%B1%EC%97%94%EB%93%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%A4%EA%B3%84)
 
@@ -190,7 +194,10 @@ backend/src
 
 ## 클래스 & 시퀀스 다이어그램
 
-[시퀀스 다이어그램 이미지]
+자세한 내용은 아래 링크를 참고해주세요🙌
+
+- 터미널 wiki
+- 메모장 wiki
 
 ---
 
@@ -206,6 +213,7 @@ backend/src
 | **Docker (optional)** | 배포용 |
 | **NCP Object Storage 계정** | 파일 저장용 |
 
+<br/>
 
 ### 환경 변수 설정 (.env)
 
@@ -226,6 +234,8 @@ NCP_BUCKET_NAME=
 NCP_OBJECT_STORAGE_ENDPOINT=
 ```
 > ⚠️ NCP_ACCESS_KEY, NCP_SECRET_KEY는 실제 Object Storage 키로 반드시 교체해야 합니다.
+
+<br/>
 
 ### 백엔드(NestJS) 실행
 
@@ -253,6 +263,8 @@ npm run seed
 ```bash
 npm run start:dev
 ```
+
+<br/>
 
 ### 프론트엔드(React + Vite) 실행
 
