@@ -31,12 +31,12 @@ Web01 팀이 지향하는 문화에 대한 내용을 담았습니다. 개인이 
 
 | 구분 | 설명 |
 | --- | --- |
-| 🖥️ 시스템 부팅 | 사용자가 “전원 버튼”을 클릭하면 가상 OS가 부팅되고, 초기 프로세스 및 기본 터미널 창이 실행됩니다. |
-| 💬 터미널 | 실제 콘솔처럼 명령어 입력을 통해 파일/시스템을 제어할 수 있습니다. (예: `ls`, `cat`, `echo`) |
-| 📁 파일 탐색기 | 가상 파일 시스템을 시각적으로 탐색 및 관리할 수 있는 GUI 환경을 제공합니다. |
-| 🧠 프로세스 관리 | 실행 중인 프로세스 목록을 관리하고, 각 프로세스별로 윈도우 상태를 추적합니다. |
-| 🪟 윈도우 시스템 | 창 이동, 크기 조절, z-index 관리 등 데스크톱 OS의 핵심 UX를 제공합니다. |
-| 📝 메모장 | 여러 사용자가 동시에 메모를 생성·편집할 수 있으며, Yjs 기반 실시간 공동 편집과 자동 저장 기능을 제공합니다. |
+| **시스템 부팅** | 사용자가 “전원 버튼”을 클릭하면 가상 OS가 부팅되고, 초기 프로세스 및 기본 터미널 창이 실행됩니다. |
+| **터미널** | 실제 콘솔처럼 명령어 입력을 통해 파일/시스템을 제어할 수 있습니다. (예: `ls`, `cat`, `echo`) |
+| **파일 탐색기** | 가상 파일 시스템을 시각적으로 탐색 및 관리할 수 있는 GUI 환경을 제공합니다. |
+| **프로세스 관리** | 실행 중인 프로세스 목록을 관리하고, 각 프로세스별로 윈도우 상태를 추적합니다. |
+| **윈도우 시스템** | 창 이동, 크기 조절, z-index 관리 등 데스크톱 OS의 핵심 UX를 제공합니다. |
+| **메모장** | 여러 사용자가 동시에 메모를 생성·편집할 수 있으며, Yjs 기반 실시간 공동 편집과 자동 저장 기능을 제공합니다. |
 
 ---
 
@@ -69,6 +69,9 @@ Web01 팀이 지향하는 문화에 대한 내용을 담았습니다. 개인이 
 <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" /> 
 <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" /> <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
 
+<details> 
+<summary> Frontend 디렉토리 구조 </summary>
+
 
 ```
 frontend/src
@@ -94,6 +97,8 @@ frontend/src
 └── App.tsx
 ```
 
+</details>
+
 <br/>
 
 #### Backend
@@ -101,6 +106,9 @@ frontend/src
 > 가상 운영체제의 시스템 동작 로직을 관리하는 핵심 엔진을 담당합니다.
 
 <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" /> <img src="https://img.shields.io/badge/Mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" /> 
+
+<details> 
+<summary> Backend 디렉토리 구조 </summary>
 
 
 ```
@@ -170,6 +178,9 @@ backend/src
     └── s3.interface.ts
 ```
 
+</details>
+
+
 <br/>
 
 ### Infra
@@ -196,8 +207,8 @@ backend/src
 
 자세한 내용은 아래 링크를 참고해주세요🙌
 
-- 터미널 wiki
-- 메모장 wiki
+- [터미널 wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%ED%84%B0%EB%AF%B8%EB%84%90-%EA%B8%B0%EB%8A%A5_%ED%81%B4%EB%9E%98%EC%8A%A4-&-%EC%8B%9C%ED%80%80%EC%8A%A4-%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8)
+- [메모장 wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EB%A9%94%EB%AA%A8%EC%9E%A5-%EA%B8%B0%EB%8A%A5_%ED%81%B4%EB%9E%98%EC%8A%A4-&-%EC%8B%9C%ED%80%80%EC%8A%A4-%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8)
 
 ---
 
