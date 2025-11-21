@@ -236,13 +236,19 @@ cd backend
 npm install
 ```
 
-#### ② seed data 삽입
+#### ② 도커 실행, 빌드, 익명 볼륨 삭제
+
+```bash
+npm run docker:up
+```
+
+#### ③ seed data 삽입
 
 ```bash
 npm run seed
 ```
 
-#### ③ 서버 실행
+#### ④ 서버 실행
 
 ```bash
 npm run start:dev
