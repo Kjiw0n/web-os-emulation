@@ -3,7 +3,16 @@
 > Web OS Emulation은 웹 환경에서 실제 운영체제(OS)를 사용하는 듯한 경험을 제공하는 가상 운영체제 시뮬레이터입니다.
 >
 >
-> 직접 경험해보고 싶다면, 👉 https://web01os.duckdns.org/
+> 직접 경험해보고 싶다면, 👉 ~https://web01os.duckdns.org/~
+
+
+### 주요 기능 1. 터미널 명령어 처리 
+![Nov-12-2025 18-07-14](https://github.com/user-attachments/assets/b496709a-5e13-4241-9b56-cd496d558577)
+
+### 주요 기능 2. 메모 동시 편집
+![Nov-20-2025 18-05-56](https://github.com/user-attachments/assets/9133086b-046d-4eb4-9731-e9311962e411)
+
+
 
 ---
 
@@ -13,17 +22,6 @@
 |:-:|:-:|:-:|:-:|
 |[J019_권대호](https://github.com/vaaast-lake)|[J072_김지원](https://github.com/Kjiw0n)|[J050_김아연](https://github.com/AYEOOON)|[J242_정승준](https://github.com/whateveriiwant)|
 
----
-
-## 그라운드룰 & 개발 컨벤션
-
-**[그라운드룰](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C%EB%A3%B0)**
-
-Web01 팀이 지향하는 문화에 대한 내용을 담았습니다. 개인이 아닌 팀의 의사결정을 반영하기 위해 언제/어떻게 대화할지, 팀을 위해 각자는 어떤 역할을 맡았는지 알아보실 수 있습니다.
-
-**[개발 컨벤션](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EA%B0%9C%EB%B0%9C-%EC%BB%A8%EB%B2%A4%EC%85%98)**
-
-개발 과정에서 발생할 수 있는 혼란을 미연에 방지하기 위해 한 몸으로 움직이는 방법에 대해 고민했습니다.
 
 ---
 
@@ -191,24 +189,7 @@ backend/src
 
 ## 시스템 구성도
 
-<img width="2030" height="1248" alt="image" src="https://github.com/user-attachments/assets/9fdaa551-92ff-4548-b631-a6bb7fa830eb" />
-
----
-
-## ERD
-
-<img width="1146" height="508" alt="Copy of os erd (2)" src="https://github.com/user-attachments/assets/d743c014-cbcc-40d5-b99c-8cb41eabf9df" />
-
-> 더 자세한 설명은 👉 [백엔드 시스템 설계 Wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EB%B0%B1%EC%97%94%EB%93%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%A4%EA%B3%84)
-
----
-
-## 클래스 & 시퀀스 다이어그램
-
-자세한 내용은 아래 링크를 참고해주세요🙌
-
-- [터미널 wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%ED%84%B0%EB%AF%B8%EB%84%90-%EA%B8%B0%EB%8A%A5_%ED%81%B4%EB%9E%98%EC%8A%A4-&-%EC%8B%9C%ED%80%80%EC%8A%A4-%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8)
-- [메모장 wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki/%EB%A9%94%EB%AA%A8%EC%9E%A5-%EA%B8%B0%EB%8A%A5_%ED%81%B4%EB%9E%98%EC%8A%A4-&-%EC%8B%9C%ED%80%80%EC%8A%A4-%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8)
+<img width="1069" height="660" alt="시스템 구성도" src="https://github.com/user-attachments/assets/bd52e2f9-d1a8-4aa7-ac95-9903680beeb7" />
 
 ---
 
@@ -247,6 +228,7 @@ NCP_OBJECT_STORAGE_ENDPOINT=
 > ⚠️ NCP_ACCESS_KEY, NCP_SECRET_KEY는 실제 Object Storage 키로 반드시 교체해야 합니다.
 
 <br/>
+
 
 ### 백엔드(NestJS) 실행
 
@@ -293,11 +275,3 @@ npm run dev
 ```
 
 ---
-
-### 시연 영상
-
----
-
-> **Note**
->
-> 욧시욧시의 OS System에 대한 자세한 내용은 👉 [팀 Wiki](https://github.com/boostcampwm2025/web01-web-os-emulation/wiki)
